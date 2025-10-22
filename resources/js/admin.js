@@ -1,13 +1,11 @@
-import './bootstrap';
-import 'vuetify/styles';
-
 import { createApp } from 'vue';
+import App from './components/Admin/App.vue';
+import router from './router';
 import vuetify from './vuetify';
-
-import App from './components/App.vue';
 
 const app = createApp(App);
 
+app.use(router);
 app.use(vuetify);
 
 app.mount('#app');

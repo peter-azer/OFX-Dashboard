@@ -1,11 +1,127 @@
-@import 'tailwindcss';
+body {
+    font-family: 'Figtree', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f4f4f4;
+}
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
+.container {
+    width: 80%;
+    margin: auto;
+    overflow: hidden;
+}
 
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+.hero-section {
+    background: #333;
+    color: #fff;
+    padding: 4rem 0;
+    text-align: center;
+}
+
+.hero-section h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.hero-section p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+}
+
+.hero-section a {
+    display: inline-block;
+    background: #f9bf3b;
+    color: #333;
+    padding: 0.8rem 1.5rem;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.brand-section {
+    padding: 2rem 0;
+    background: #fff;
+}
+
+.brand-section ul {
+    list-style: none;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.brand-section img {
+    width: 100px;
+}
+
+.about-section {
+    padding: 4rem 0;
+}
+
+.about-section h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.service-section {
+    padding: 4rem 0;
+    background: #fff;
+}
+
+.service-section h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.service-section ul {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 2rem;
+}
+
+.service-section li {
+    background: #f4f4f4;
+    padding: 1.5rem;
+    text-align: center;
+}
+
+.work-section {
+    padding: 4rem 0;
+}
+
+.work-section h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.work-items {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 2rem;
+}
+
+.work-item img {
+    width: 100%;
+}
+
+.team-section {
+    padding: 4rem 0;
+    background: #fff;
+}
+
+.team-section h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.team-members {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 2rem;
+}
+
+.team-member img {
+    width: 100%;
+    border-radius: 50%;
 }
