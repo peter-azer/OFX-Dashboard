@@ -20,12 +20,15 @@ class AboutController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'title' => 'required',
-            'description' => 'required',
+        $validated = $request->validate([
+            'title' => 'required|string',
+            'description' => 'required|string',
+            'image_url' => 'nullable|string',
+            'video_url' => 'nullable|string',
+            'is_active' => 'boolean',
         ]);
 
-        return About::create($request->all());
+        return About::create($validated);
     }
 
     /**
@@ -41,12 +44,15 @@ class AboutController extends Controller
      */
     public function update(Request $request, About $about)
     {
-        $request->validate([
-            'title' => 'required',
-            'description' => 'required',
+        $validated = $request->validate([
+            'title' => 'required|string',
+            'description' => 'required|string',
+            'image_url' => 'nullable|string',
+            'video_url' => 'nullable|string',
+            'is_active' => 'boolean',
         ]);
 
-        $about->update($request->all());
+        $about->update($validated);
 
         return $about;
     }

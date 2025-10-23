@@ -20,13 +20,18 @@ class TeamController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required',
-            'position' => 'required',
-            'image_url' => 'required',
+        $validated = $request->validate([
+            'member_name' => 'required|string',
+            'position' => 'required|string',
+            'bio' => 'required|string',
+            'photo_url' => 'required|string',
+            'facebook_link' => 'nullable|string',
+            'linkedin_link' => 'nullable|string',
+            'twitter_link' => 'nullable|string',
+            'is_active' => 'boolean',
         ]);
 
-        return Team::create($request->all());
+        return Team::create($validated);
     }
 
     /**
@@ -42,13 +47,18 @@ class TeamController extends Controller
      */
     public function update(Request $request, Team $team)
     {
-        $request->validate([
-            'name' => 'required',
-            'position' => 'required',
-            'image_url' => 'required',
+        $validated = $request->validate([
+            'member_name' => 'required|string',
+            'position' => 'required|string',
+            'bio' => 'required|string',
+            'photo_url' => 'required|string',
+            'facebook_link' => 'nullable|string',
+            'linkedin_link' => 'nullable|string',
+            'twitter_link' => 'nullable|string',
+            'is_active' => 'boolean',
         ]);
 
-        $team->update($request->all());
+        $team->update($validated);
 
         return $team;
     }

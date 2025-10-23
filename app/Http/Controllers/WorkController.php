@@ -20,13 +20,16 @@ class WorkController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'title' => 'required',
-            'category' => 'required',
-            'image_url' => 'required',
+        $validated = $request->validate([
+            'project_title' => 'required|string',
+            'project_description' => 'required|string',
+            'project_image' => 'required|string',
+            'project_link' => 'nullable|string',
+            'category' => 'required|string',
+            'is_active' => 'boolean',
         ]);
 
-        return Work::create($request->all());
+        return Work::create($validated);
     }
 
     /**
@@ -42,13 +45,16 @@ class WorkController extends Controller
      */
     public function update(Request $request, Work $work)
     {
-        $request->validate([
-            'title' => 'required',
-            'category' => 'required',
-            'image_url' => 'required',
+        $validated = $request->validate([
+            'project_title' => 'required|string',
+            'project_description' => 'required|string',
+            'project_image' => 'required|string',
+            'project_link' => 'nullable|string',
+            'category' => 'required|string',
+            'is_active' => 'boolean',
         ]);
 
-        $work->update($request->all());
+        $work->update($validated);
 
         return $work;
     }

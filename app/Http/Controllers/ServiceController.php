@@ -20,12 +20,15 @@ class ServiceController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'title' => 'required',
-            'description' => 'required',
+        $validated = $request->validate([
+            'service_name' => 'required|string',
+            'short_description' => 'required|string',
+            'icon_url' => 'required|string',
+            'order' => 'nullable|integer',
+            'is_active' => 'boolean',
         ]);
 
-        return Service::create($request->all());
+        return Service::create($validated);
     }
 
     /**
@@ -41,12 +44,15 @@ class ServiceController extends Controller
      */
     public function update(Request $request, Service $service)
     {
-        $request->validate([
-            'title' => 'required',
-            'description' => 'required',
+        $validated = $request->validate([
+            'service_name' => 'required|string',
+            'short_description' => 'required|string',
+            'icon_url' => 'required|string',
+            'order' => 'nullable|integer',
+            'is_active' => 'boolean',
         ]);
 
-        $service->update($request->all());
+        $service->update($validated);
 
         return $service;
     }

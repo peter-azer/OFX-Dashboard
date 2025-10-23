@@ -20,14 +20,17 @@ class HeroController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'title' => 'required',
-            'subtitle' => 'required',
-            'cta_text' => 'required',
-            'cta_link' => 'required',
+        $validated = $request->validate([
+            'title' => 'required|string',
+            'subtitle' => 'required|string',
+            'button_text' => 'required|string',
+            'button_link' => 'required|string',
+            'image_url' => 'nullable|string',
+            'order' => 'nullable|integer',
+            'is_active' => 'boolean',
         ]);
 
-        return Hero::create($request->all());
+        return Hero::create($validated);
     }
 
     /**
@@ -43,14 +46,17 @@ class HeroController extends Controller
      */
     public function update(Request $request, Hero $hero)
     {
-        $request->validate([
-            'title' => 'required',
-            'subtitle' => 'required',
-            'cta_text' => 'required',
-            'cta_link' => 'required',
+        $validated = $request->validate([
+            'title' => 'required|string',
+            'subtitle' => 'required|string',
+            'button_text' => 'required|string',
+            'button_link' => 'required|string',
+            'image_url' => 'nullable|string',
+            'order' => 'nullable|integer',
+            'is_active' => 'boolean',
         ]);
 
-        $hero->update($request->all());
+        $hero->update($validated);
 
         return $hero;
     }

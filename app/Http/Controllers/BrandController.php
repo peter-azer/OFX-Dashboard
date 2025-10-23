@@ -20,12 +20,14 @@ class BrandController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required',
-            'logo_url' => 'required',
+        $validated = $request->validate([
+            'brand_name' => 'required|string',
+            'logo_url' => 'required|string',
+            'order' => 'nullable|integer',
+            'is_active' => 'boolean',
         ]);
 
-        return Brand::create($request->all());
+        return Brand::create($validated);
     }
 
     /**
@@ -41,12 +43,14 @@ class BrandController extends Controller
      */
     public function update(Request $request, Brand $brand)
     {
-        $request->validate([
-            'name' => 'required',
-            'logo_url' => 'required',
+        $validated = $request->validate([
+            'brand_name' => 'required|string',
+            'logo_url' => 'required|string',
+            'order' => 'nullable|integer',
+            'is_active' => 'boolean',
         ]);
 
-        $brand->update($request->all());
+        $brand->update($validated);
 
         return $brand;
     }

@@ -19,16 +19,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
+    Route::apiResource('heroes', HeroController::class);
+    Route::apiResource('brands', BrandController::class);
+    Route::apiResource('abouts', AboutController::class);
+    Route::apiResource('services', ServiceController::class);
+    Route::apiResource('works', WorkController::class);
+    Route::apiResource('teams', TeamController::class);
 });
 
+Route::post('/admin/login', [LoginController::class, 'login']);
 
 Route::get('/home', [PageController::class, 'home']);
-
-Route::apiResource('heroes', HeroController::class);
-Route::apiResource('brands', BrandController::class);
-Route::apiResource('abouts', AboutController::class);
-Route::apiResource('services', ServiceController::class);
-Route::apiResource('works', WorkController::class);
-Route::apiResource('teams', TeamController::class);
-
-Route::post('/admin/login', [LoginController::class, 'login']);

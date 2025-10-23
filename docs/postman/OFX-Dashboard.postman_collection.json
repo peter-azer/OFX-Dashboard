@@ -1,0 +1,214 @@
+{
+  "info": {
+    "name": "OFX-Dashboard API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "3d1f6e39-7f8a-4b62-9d2a-OFXDSHBD"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      { "key": "token", "value": "{{auth_token}}", "type": "string" }
+    ]
+  },
+  "variable": [],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "{{base_url}}/api/login", "host": ["{{base_url}}"], "path": ["api", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Got access_token', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  var json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('access_token');",
+                  "  pm.environment.set('auth_token', json.access_token);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/logout", "host": ["{{base_url}}"], "path": ["api", "logout"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/user", "host": ["{{base_url}}"], "path": ["api", "user"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Admin Login",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "{{base_url}}/api/admin/login", "host": ["{{base_url}}"], "path": ["api", "admin", "login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}"
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Public",
+      "item": [
+        {
+          "name": "Home",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/api/home", "host": ["{{base_url}}"], "path": ["api", "home"] }
+          },
+          "response": []
+        }
+      ]
+    },
+
+    {
+      "name": "Heroes",
+      "item": [
+        {
+          "name": "List Heroes",
+          "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/heroes", "host": ["{{base_url}}"], "path": ["api","heroes"] } },
+          "response": []
+        },
+        {
+          "name": "Create Hero",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "{{base_url}}/api/heroes", "host": ["{{base_url}}"], "path": ["api","heroes"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Welcome\",\n  \"subtitle\": \"To our site\",\n  \"button_text\": \"Learn More\",\n  \"button_link\": \"/about\",\n  \"image_url\": \"https://example.com/image.jpg\",\n  \"order\": 1,\n  \"is_active\": true\n}"
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "  var json = pm.response.json();",
+                  "  pm.environment.set('hero_id', json.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Hero",
+          "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/heroes/{{hero_id}}", "host": ["{{base_url}}"], "path": ["api","heroes","{{hero_id}}"] } },
+          "response": []
+        },
+        {
+          "name": "Update Hero",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Content-Type", "value": "application/json" } ],
+            "url": { "raw": "{{base_url}}/api/heroes/{{hero_id}}", "host": ["{{base_url}}"], "path": ["api","heroes","{{hero_id}}"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Welcome Updated\",\n  \"subtitle\": \"To our site\",\n  \"button_text\": \"Explore\",\n  \"button_link\": \"/about\",\n  \"image_url\": \"https://example.com/image2.jpg\",\n  \"order\": 2,\n  \"is_active\": true\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Hero",
+          "request": { "method": "DELETE", "url": { "raw": "{{base_url}}/api/heroes/{{hero_id}}", "host": ["{{base_url}}"], "path": ["api","heroes","{{hero_id}}"] } },
+          "response": []
+        }
+      ]
+    },
+
+    {
+      "name": "Brands",
+      "item": [
+        { "name": "List Brands", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/brands", "host": ["{{base_url}}"], "path": ["api","brands"] } }, "response": [] },
+        { "name": "Create Brand", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" } ], "url": { "raw": "{{base_url}}/api/brands", "host": ["{{base_url}}"], "path": ["api","brands"] }, "body": { "mode": "raw", "raw": "{\n  \"brand_name\": \"ACME\",\n  \"logo_url\": \"https://example.com/logo.png\",\n  \"order\": 1,\n  \"is_active\": true\n}" } }, "response": [], "event": [{"listen":"test","script":{"type":"text/javascript","exec":["if (pm.response.code === 200 || pm.response.code === 201) {","  var json = pm.response.json();","  pm.environment.set('brand_id', json.id);","}"]}}] },
+        { "name": "Get Brand", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/brands/{{brand_id}}", "host": ["{{base_url}}"], "path": ["api","brands","{{brand_id}}"] } }, "response": [] },
+        { "name": "Update Brand", "request": { "method": "PUT", "header": [ { "key": "Content-Type", "value": "application/json" } ], "url": { "raw": "{{base_url}}/api/brands/{{brand_id}}", "host": ["{{base_url}}"], "path": ["api","brands","{{brand_id}}"] }, "body": { "mode": "raw", "raw": "{\n  \"brand_name\": \"ACME Updated\",\n  \"logo_url\": \"https://example.com/logo2.png\",\n  \"order\": 2,\n  \"is_active\": true\n}" } }, "response": [] },
+        { "name": "Delete Brand", "request": { "method": "DELETE", "url": { "raw": "{{base_url}}/api/brands/{{brand_id}}", "host": ["{{base_url}}"], "path": ["api","brands","{{brand_id}}"] } }, "response": [] }
+      ]
+    },
+
+    {
+      "name": "Abouts",
+      "item": [
+        { "name": "List Abouts", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/abouts", "host": ["{{base_url}}"], "path": ["api","abouts"] } }, "response": [] },
+        { "name": "Create About", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" } ], "url": { "raw": "{{base_url}}/api/abouts", "host": ["{{base_url}}"], "path": ["api","abouts"] }, "body": { "mode": "raw", "raw": "{\n  \"title\": \"About Us\",\n  \"description\": \"We are ...\",\n  \"image_url\": \"https://example.com/about.jpg\",\n  \"video_url\": \"https://example.com/intro.mp4\",\n  \"is_active\": true\n}" } }, "response": [], "event": [{"listen":"test","script":{"type":"text/javascript","exec":["if (pm.response.code === 200 || pm.response.code === 201) {","  var json = pm.response.json();","  pm.environment.set('about_id', json.id);","}"]}}] },
+        { "name": "Get About", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/abouts/{{about_id}}", "host": ["{{base_url}}"], "path": ["api","abouts","{{about_id}}"] } }, "response": [] },
+        { "name": "Update About", "request": { "method": "PUT", "header": [ { "key": "Content-Type", "value": "application/json" } ], "url": { "raw": "{{base_url}}/api/abouts/{{about_id}}", "host": ["{{base_url}}"], "path": ["api","abouts","{{about_id}}"] }, "body": { "mode": "raw", "raw": "{\n  \"title\": \"About Us Updated\",\n  \"description\": \"We are ... better\",\n  \"image_url\": \"https://example.com/about2.jpg\",\n  \"video_url\": \"https://example.com/intro2.mp4\",\n  \"is_active\": true\n}" } }, "response": [] },
+        { "name": "Delete About", "request": { "method": "DELETE", "url": { "raw": "{{base_url}}/api/abouts/{{about_id}}", "host": ["{{base_url}}"], "path": ["api","abouts","{{about_id}}"] } }, "response": [] }
+      ]
+    },
+
+    {
+      "name": "Services",
+      "item": [
+        { "name": "List Services", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/services", "host": ["{{base_url}}"], "path": ["api","services"] } }, "response": [] },
+        { "name": "Create Service", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" } ], "url": { "raw": "{{base_url}}/api/services", "host": ["{{base_url}}"], "path": ["api","services"] }, "body": { "mode": "raw", "raw": "{\n  \"service_name\": \"Design\",\n  \"short_description\": \"UI/UX\",\n  \"icon_url\": \"https://example.com/icon.svg\",\n  \"order\": 1,\n  \"is_active\": true\n}" } }, "response": [], "event": [{"listen":"test","script":{"type":"text/javascript","exec":["if (pm.response.code === 200 || pm.response.code === 201) {","  var json = pm.response.json();","  pm.environment.set('service_id', json.id);","}"]}}] },
+        { "name": "Get Service", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/services/{{service_id}}", "host": ["{{base_url}}"], "path": ["api","services","{{service_id}}"] } }, "response": [] },
+        { "name": "Update Service", "request": { "method": "PUT", "header": [ { "key": "Content-Type", "value": "application/json" } ], "url": { "raw": "{{base_url}}/api/services/{{service_id}}", "host": ["{{base_url}}"], "path": ["api","services","{{service_id}}"] }, "body": { "mode": "raw", "raw": "{\n  \"service_name\": \"Design & Strategy\",\n  \"short_description\": \"UI/UX & Research\",\n  \"icon_url\": \"https://example.com/icon2.svg\",\n  \"order\": 2,\n  \"is_active\": true\n}" } }, "response": [] },
+        { "name": "Delete Service", "request": { "method": "DELETE", "url": { "raw": "{{base_url}}/api/services/{{service_id}}", "host": ["{{base_url}}"], "path": ["api","services","{{service_id}}"] } }, "response": [] }
+      ]
+    },
+
+    {
+      "name": "Works",
+      "item": [
+        { "name": "List Works", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/works", "host": ["{{base_url}}"], "path": ["api","works"] } }, "response": [] },
+        { "name": "Create Work", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" } ], "url": { "raw": "{{base_url}}/api/works", "host": ["{{base_url}}"], "path": ["api","works"] }, "body": { "mode": "raw", "raw": "{\n  \"project_title\": \"Website\",\n  \"project_description\": \"Awesome site\",\n  \"project_image\": \"https://example.com/work.jpg\",\n  \"project_link\": \"https://example.com\",\n  \"category\": \"web\",\n  \"is_active\": true\n}" } }, "response": [], "event": [{"listen":"test","script":{"type":"text/javascript","exec":["if (pm.response.code === 200 || pm.response.code === 201) {","  var json = pm.response.json();","  pm.environment.set('work_id', json.id);","}"]}}] },
+        { "name": "Get Work", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/works/{{work_id}}", "host": ["{{base_url}}"], "path": ["api","works","{{work_id}}"] } }, "response": [] },
+        { "name": "Update Work", "request": { "method": "PUT", "header": [ { "key": "Content-Type", "value": "application/json" } ], "url": { "raw": "{{base_url}}/api/works/{{work_id}}", "host": ["{{base_url}}"], "path": ["api","works","{{work_id}}"] }, "body": { "mode": "raw", "raw": "{\n  \"project_title\": \"Website v2\",\n  \"project_description\": \"Even better\",\n  \"project_image\": \"https://example.com/work2.jpg\",\n  \"project_link\": \"https://example.com\",\n  \"category\": \"web\",\n  \"is_active\": true\n}" } }, "response": [] },
+        { "name": "Delete Work", "request": { "method": "DELETE", "url": { "raw": "{{base_url}}/api/works/{{work_id}}", "host": ["{{base_url}}"], "path": ["api","works","{{work_id}}"] } }, "response": [] }
+      ]
+    },
+
+    {
+      "name": "Teams",
+      "item": [
+        { "name": "List Teams", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/teams", "host": ["{{base_url}}"], "path": ["api","teams"] } }, "response": [] },
+        { "name": "Create Team Member", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" } ], "url": { "raw": "{{base_url}}/api/teams", "host": ["{{base_url}}"], "path": ["api","teams"] }, "body": { "mode": "raw", "raw": "{\n  \"member_name\": \"John Doe\",\n  \"position\": \"Designer\",\n  \"bio\": \"Short bio\",\n  \"photo_url\": \"https://example.com/john.jpg\",\n  \"facebook_link\": \"https://facebook.com/john\",\n  \"linkedin_link\": \"https://linkedin.com/in/john\",\n  \"twitter_link\": \"https://twitter.com/john\",\n  \"is_active\": true\n}" } }, "response": [], "event": [{"listen":"test","script":{"type":"text/javascript","exec":["if (pm.response.code === 200 || pm.response.code === 201) {","  var json = pm.response.json();","  pm.environment.set('team_id', json.id);","}"]}}] },
+        { "name": "Get Team Member", "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/teams/{{team_id}}", "host": ["{{base_url}}"], "path": ["api","teams","{{team_id}}"] } }, "response": [] },
+        { "name": "Update Team Member", "request": { "method": "PUT", "header": [ { "key": "Content-Type", "value": "application/json" } ], "url": { "raw": "{{base_url}}/api/teams/{{team_id}}", "host": ["{{base_url}}"], "path": ["api","teams","{{team_id}}"] }, "body": { "mode": "raw", "raw": "{\n  \"member_name\": \"John Doe\",\n  \"position\": \"Lead Designer\",\n  \"bio\": \"Updated bio\",\n  \"photo_url\": \"https://example.com/john2.jpg\",\n  \"facebook_link\": \"https://facebook.com/john\",\n  \"linkedin_link\": \"https://linkedin.com/in/john\",\n  \"twitter_link\": \"https://twitter.com/john\",\n  \"is_active\": true\n}" } }, "response": [] },
+        { "name": "Delete Team Member", "request": { "method": "DELETE", "url": { "raw": "{{base_url}}/api/teams/{{team_id}}", "host": ["{{base_url}}"], "path": ["api","teams","{{team_id}}"] } }, "response": [] }
+      ]
+    }
+  ]
+}

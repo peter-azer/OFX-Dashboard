@@ -22,7 +22,7 @@
                                 type="password"
                                 required
                             ></v-text-field>
-                            <v-btn type="submit" color="primary" block>Login</v-btn>
+                            <v-btn type="submit" color="primary" block :loading="loading">Login</v-btn>
                         </v-form>
                     </v-card-text>
                 </v-card>
@@ -32,27 +32,39 @@
 </template>
 
 <script>
-import axios from 'axios';
+import api from '../../api';
 
 export default {
     data() {
         return {
             email: '',
             password: '',
+            loading: false,
         };
     },
     methods: {
         login() {
-            axios.post('/api/admin/login', {
+            this.loading = true;
+            api.post('/login', {
                 email: this.email,
                 password: this.password,
-            }).then(response => {
-                if (response.data.success) {
-                    this.$router.push({ name: 'Dashboard' });
-                } else {
-                    alert(response.data.message);
-                }
-            });
+            })
+                .then((response) => {
+                    const token = response.data?.access_token;
+                    if (token) {
+                        localStorage.setItem('access_token', token);
+                        this.$router.push({ name: 'admin.dashboard' });
+                    } else {
+                        alert('Login failed: no token received');
+                    }
+                })
+                .catch((err) => {
+                    const msg = err?.response?.data?.message || 'Invalid login details';
+                    alert(msg);
+                })
+                .finally(() => {
+                    this.loading = false;
+                });
         },
     },
 };
