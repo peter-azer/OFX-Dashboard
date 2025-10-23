@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Hero;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 
 class HeroController extends Controller
 {
@@ -25,10 +27,15 @@ class HeroController extends Controller
             'subtitle' => 'required|string',
             'button_text' => 'required|string',
             'button_link' => 'required|string',
-            'image_url' => 'nullable|string',
+            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:4096',
             'order' => 'nullable|integer',
             'is_active' => 'boolean',
         ]);
+
+        if ($request->hasFile('image_url')) {
+            $path = $request->file('image_url')->store('heroes', 'public');
+            $validated['image_url'] = URL::to(Storage::url($path));
+        }
 
         return Hero::create($validated);
     }
@@ -51,10 +58,22 @@ class HeroController extends Controller
             'subtitle' => 'required|string',
             'button_text' => 'required|string',
             'button_link' => 'required|string',
-            'image_url' => 'nullable|string',
+            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:4096',
             'order' => 'nullable|integer',
             'is_active' => 'boolean',
         ]);
+
+        if ($request->hasFile('image_url')) {
+            if (!empty($hero->image_url)) {
+                $oldPath = parse_url($hero->image_url, PHP_URL_PATH) ?? '';
+                $old = ltrim(str_replace('/storage/', '', $oldPath), '/');
+                if ($old) {
+                    Storage::disk('public')->delete($old);
+                }
+            }
+            $path = $request->file('image_url')->store('heroes', 'public');
+            $validated['image_url'] = URL::to(Storage::url($path));
+        }
 
         $hero->update($validated);
 
@@ -66,6 +85,13 @@ class HeroController extends Controller
      */
     public function destroy(Hero $hero)
     {
+        if (!empty($hero->image_url)) {
+            $oldPath = parse_url($hero->image_url, PHP_URL_PATH) ?? '';
+            $old = ltrim(str_replace('/storage/', '', $oldPath), '/');
+            if ($old) {
+                Storage::disk('public')->delete($old);
+            }
+        }
         $hero->delete();
 
         return response()->noContent();

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Service;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 
 class ServiceController extends Controller
 {
@@ -23,10 +25,15 @@ class ServiceController extends Controller
         $validated = $request->validate([
             'service_name' => 'required|string',
             'short_description' => 'required|string',
-            'icon_url' => 'required|string',
+            'icon_url' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif,svg|max:4096',
             'order' => 'nullable|integer',
             'is_active' => 'boolean',
         ]);
+
+        if ($request->hasFile('icon_url')) {
+            $path = $request->file('icon_url')->store('services', 'public');
+            $validated['icon_url'] = URL::to(Storage::url($path));
+        }
 
         return Service::create($validated);
     }
@@ -47,10 +54,22 @@ class ServiceController extends Controller
         $validated = $request->validate([
             'service_name' => 'required|string',
             'short_description' => 'required|string',
-            'icon_url' => 'required|string',
+            'icon_url' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif,svg|max:4096',
             'order' => 'nullable|integer',
             'is_active' => 'boolean',
         ]);
+
+        if ($request->hasFile('icon_url')) {
+            if (!empty($service->icon_url)) {
+                $oldPath = parse_url($service->icon_url, PHP_URL_PATH) ?? '';
+                $old = ltrim(str_replace('/storage/', '', $oldPath), '/');
+                if ($old) {
+                    Storage::disk('public')->delete($old);
+                }
+            }
+            $path = $request->file('icon_url')->store('services', 'public');
+            $validated['icon_url'] = URL::to(Storage::url($path));
+        }
 
         $service->update($validated);
 
@@ -62,6 +81,13 @@ class ServiceController extends Controller
      */
     public function destroy(Service $service)
     {
+        if (!empty($service->icon_url)) {
+            $oldPath = parse_url($service->icon_url, PHP_URL_PATH) ?? '';
+            $old = ltrim(str_replace('/storage/', '', $oldPath), '/');
+            if ($old) {
+                Storage::disk('public')->delete($old);
+            }
+        }
         $service->delete();
 
         return response()->noContent();

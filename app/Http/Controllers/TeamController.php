@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Team;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 
 class TeamController extends Controller
 {
@@ -24,12 +26,17 @@ class TeamController extends Controller
             'member_name' => 'required|string',
             'position' => 'required|string',
             'bio' => 'required|string',
-            'photo_url' => 'required|string',
+            'photo_url' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:4096',
             'facebook_link' => 'nullable|string',
             'linkedin_link' => 'nullable|string',
             'twitter_link' => 'nullable|string',
             'is_active' => 'boolean',
         ]);
+
+        if ($request->hasFile('photo_url')) {
+            $path = $request->file('photo_url')->store('teams', 'public');
+            $validated['photo_url'] = URL::to(Storage::url($path));
+        }
 
         return Team::create($validated);
     }
@@ -51,12 +58,24 @@ class TeamController extends Controller
             'member_name' => 'required|string',
             'position' => 'required|string',
             'bio' => 'required|string',
-            'photo_url' => 'required|string',
+            'photo_url' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:4096',
             'facebook_link' => 'nullable|string',
             'linkedin_link' => 'nullable|string',
             'twitter_link' => 'nullable|string',
             'is_active' => 'boolean',
         ]);
+
+        if ($request->hasFile('photo_url')) {
+            if (!empty($team->photo_url)) {
+                $oldPath = parse_url($team->photo_url, PHP_URL_PATH) ?? '';
+                $old = ltrim(str_replace('/storage/', '', $oldPath), '/');
+                if ($old) {
+                    Storage::disk('public')->delete($old);
+                }
+            }
+            $path = $request->file('photo_url')->store('teams', 'public');
+            $validated['photo_url'] = URL::to(Storage::url($path));
+        }
 
         $team->update($validated);
 
@@ -68,6 +87,13 @@ class TeamController extends Controller
      */
     public function destroy(Team $team)
     {
+        if (!empty($team->photo_url)) {
+            $oldPath = parse_url($team->photo_url, PHP_URL_PATH) ?? '';
+            $old = ltrim(str_replace('/storage/', '', $oldPath), '/');
+            if ($old) {
+                Storage::disk('public')->delete($old);
+            }
+        }
         $team->delete();
 
         return response()->noContent();

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\URL;
 
 class Team extends Model
 {
@@ -16,5 +17,9 @@ class Team extends Model
         'twitter_link',
         'is_active',
     ];
-    //
+
+    public function getPhotoUrlAttribute($value)
+    {
+        return $value ? url($value) : null;
+    }
 }

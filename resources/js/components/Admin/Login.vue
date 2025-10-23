@@ -11,14 +11,14 @@
                             <v-text-field
                                 v-model="email"
                                 label="Email"
-                                prepend-icon="mdi-account"
+                                prepend-icon="fas fa-user"
                                 type="email"
                                 required
                             ></v-text-field>
                             <v-text-field
                                 v-model="password"
                                 label="Password"
-                                prepend-icon="mdi-lock"
+                                prepend-icon="fas fa-lock"
                                 type="password"
                                 required
                             ></v-text-field>
@@ -28,6 +28,7 @@
                 </v-card>
             </v-col>
         </v-row>
+        <v-snackbar v-model="snackbar.show" :color="snackbar.color" timeout="2500">{{ snackbar.text }}</v-snackbar>
     </v-container>
 </template>
 
@@ -40,9 +41,11 @@ export default {
             email: '',
             password: '',
             loading: false,
+            snackbar: { show: false, text: '', color: 'success' },
         };
     },
     methods: {
+        notify(text, color = 'success') { this.snackbar = { show: true, text, color }; },
         login() {
             this.loading = true;
             api.post('/login', {
@@ -53,14 +56,15 @@ export default {
                     const token = response.data?.access_token;
                     if (token) {
                         localStorage.setItem('access_token', token);
+                        this.notify('Login successful');
                         this.$router.push({ name: 'admin.dashboard' });
                     } else {
-                        alert('Login failed: no token received');
+                        this.notify('Login failed: no token received', 'error');
                     }
                 })
                 .catch((err) => {
                     const msg = err?.response?.data?.message || 'Invalid login details';
-                    alert(msg);
+                    this.notify(msg, 'error');
                 })
                 .finally(() => {
                     this.loading = false;

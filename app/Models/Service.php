@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\URL;
 
 class Service extends Model
 {
@@ -13,5 +14,10 @@ class Service extends Model
         'order',
         'is_active',
     ];
-    //
+
+    public function getIconUrlAttribute($value)
+    {
+        return $value ? url($value) : null;
+    }
 }
+//

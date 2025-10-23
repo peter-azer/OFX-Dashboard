@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Brand;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 
 class BrandController extends Controller
 {
@@ -22,10 +24,15 @@ class BrandController extends Controller
     {
         $validated = $request->validate([
             'brand_name' => 'required|string',
-            'logo_url' => 'required|string',
+            'logo_url' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:4096',
             'order' => 'nullable|integer',
             'is_active' => 'boolean',
         ]);
+
+        if ($request->hasFile('logo_url')) {
+            $path = $request->file('logo_url')->store('brands', 'public');
+            $validated['logo_url'] = URL::to(Storage::url($path));
+        }
 
         return Brand::create($validated);
     }
@@ -45,10 +52,22 @@ class BrandController extends Controller
     {
         $validated = $request->validate([
             'brand_name' => 'required|string',
-            'logo_url' => 'required|string',
+            'logo_url' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:4096',
             'order' => 'nullable|integer',
             'is_active' => 'boolean',
         ]);
+
+        if ($request->hasFile('logo_url')) {
+            if (!empty($brand->logo_url)) {
+                $oldPath = parse_url($brand->logo_url, PHP_URL_PATH) ?? '';
+                $old = ltrim(str_replace('/storage/', '', $oldPath), '/');
+                if ($old) {
+                    Storage::disk('public')->delete($old);
+                }
+            }
+            $path = $request->file('logo_url')->store('brands', 'public');
+            $validated['logo_url'] = URL::to(Storage::url($path));
+        }
 
         $brand->update($validated);
 
@@ -60,6 +79,13 @@ class BrandController extends Controller
      */
     public function destroy(Brand $brand)
     {
+        if (!empty($brand->logo_url)) {
+            $oldPath = parse_url($brand->logo_url, PHP_URL_PATH) ?? '';
+            $old = ltrim(str_replace('/storage/', '', $oldPath), '/');
+            if ($old) {
+                Storage::disk('public')->delete($old);
+            }
+        }
         $brand->delete();
 
         return response()->noContent();

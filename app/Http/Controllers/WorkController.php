@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Work;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 
 class WorkController extends Controller
 {
@@ -23,11 +25,16 @@ class WorkController extends Controller
         $validated = $request->validate([
             'project_title' => 'required|string',
             'project_description' => 'required|string',
-            'project_image' => 'required|string',
+            'project_image' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:4096',
             'project_link' => 'nullable|string',
             'category' => 'required|string',
             'is_active' => 'boolean',
         ]);
+
+        if ($request->hasFile('project_image')) {
+            $path = $request->file('project_image')->store('works', 'public');
+            $validated['project_image'] = URL::to(Storage::url($path));
+        }
 
         return Work::create($validated);
     }
@@ -48,11 +55,23 @@ class WorkController extends Controller
         $validated = $request->validate([
             'project_title' => 'required|string',
             'project_description' => 'required|string',
-            'project_image' => 'required|string',
+            'project_image' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:4096',
             'project_link' => 'nullable|string',
             'category' => 'required|string',
             'is_active' => 'boolean',
         ]);
+
+        if ($request->hasFile('project_image')) {
+            if (!empty($work->project_image)) {
+                $oldPath = parse_url($work->project_image, PHP_URL_PATH) ?? '';
+                $old = ltrim(str_replace('/storage/', '', $oldPath), '/');
+                if ($old) {
+                    Storage::disk('public')->delete($old);
+                }
+            }
+            $path = $request->file('project_image')->store('works', 'public');
+            $validated['project_image'] = URL::to(Storage::url($path));
+        }
 
         $work->update($validated);
 
@@ -64,6 +83,13 @@ class WorkController extends Controller
      */
     public function destroy(Work $work)
     {
+        if (!empty($work->project_image)) {
+            $oldPath = parse_url($work->project_image, PHP_URL_PATH) ?? '';
+            $old = ltrim(str_replace('/storage/', '', $oldPath), '/');
+            if ($old) {
+                Storage::disk('public')->delete($old);
+            }
+        }
         $work->delete();
 
         return response()->noContent();

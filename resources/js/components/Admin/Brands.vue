@@ -10,9 +10,12 @@
     </v-row>
 
     <v-data-table :items="items" :headers="headers" :loading="loading">
+      <template #item.logo_url="{ item }">
+        <v-img :src="item.logo_url" width="60" height="40" cover></v-img>
+      </template>
       <template #item.actions="{ item }">
-        <v-btn size="small" variant="text" icon="mdi-pencil" @click="openEdit(item)" />
-        <v-btn size="small" variant="text" color="error" icon="mdi-delete" @click="remove(item)" />
+        <v-btn size="small" variant="text" icon="fas fa-pen" @click="openEdit(item)" />
+        <v-btn size="small" variant="text" color="error" icon="fas fa-trash" @click="openDelete(item)" />
       </template>
     </v-data-table>
 
@@ -22,7 +25,14 @@
         <v-card-text>
           <v-form @submit.prevent="save">
             <v-text-field v-model="form.brand_name" label="Brand Name" required />
-            <v-text-field v-model="form.logo_url" label="Logo URL" required />
+            <v-file-input
+              v-model="form.logo_url"
+              label="Upload Logo"
+              accept="image/*"
+              prepend-icon="fas fa-image"
+              show-size
+              clearable
+            />
             <v-text-field v-model.number="form.order" type="number" label="Order" />
             <v-switch v-model="form.is_active" :true-value="true" :false-value="false" label="Active" />
           </v-form>
@@ -36,6 +46,18 @@
     </v-dialog>
 
     <v-snackbar v-model="snackbar.show" :color="snackbar.color" timeout="2500">{{ snackbar.text }}</v-snackbar>
+
+    <v-dialog v-model="confirm.show" max-width="420">
+      <v-card>
+        <v-card-title>Confirm Delete</v-card-title>
+        <v-card-text>Are you sure you want to delete this brand?</v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn variant="text" @click="confirm.show = false">Cancel</v-btn>
+          <v-btn color="error" :loading="confirm.loading" @click="confirmDelete">Delete</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
   </template>
 
@@ -51,7 +73,8 @@ export default {
       dialog: false,
       editing: false,
       currentId: null,
-      form: { brand_name: '', logo_url: '', order: 0, is_active: true },
+      form: { brand_name: '', logo_url: null, order: 0, is_active: true },
+      confirm: { show: false, item: null, loading: false },
       headers: [
         { title: 'ID', key: 'id' },
         { title: 'Name', key: 'brand_name' },
@@ -79,18 +102,27 @@ export default {
     openCreate() {
       this.editing = false;
       this.currentId = null;
-      this.form = { brand_name: '', logo_url: '', order: 0, is_active: true };
+      this.form = { brand_name: '', logo_url: null, order: 0, is_active: true };
       this.dialog = true;
     },
     openEdit(item) {
       this.editing = true;
       this.currentId = item.id;
-      this.form = { brand_name: item.brand_name, logo_url: item.logo_url, order: item.order, is_active: item.is_active };
+      this.form = { brand_name: item.brand_name, logo_url: null, order: item.order, is_active: item.is_active };
       this.dialog = true;
     },
     save() {
       this.saving = true;
-      const req = this.editing ? api.put(`/brands/${this.currentId}`, this.form) : api.post('/brands', this.form);
+      const fd = new FormData();
+      fd.append('brand_name', this.form.brand_name);
+      const logoFile = Array.isArray(this.form.logo_url) ? this.form.logo_url[0] : this.form.logo_url;
+      if (logoFile instanceof File) fd.append('logo_url', logoFile);
+      if (this.form.order !== null && this.form.order !== undefined) fd.append('order', this.form.order);
+      fd.append('is_active', this.form.is_active ? '1' : '0');
+
+      const req = this.editing
+        ? (fd.append('_method', 'PUT'), api.post(`/brands/${this.currentId}`, fd))
+        : api.post('/brands', fd);
       req
         .then(() => {
           this.dialog = false;
@@ -100,11 +132,14 @@ export default {
         .catch(() => this.notify('Save failed', 'error'))
         .finally(() => (this.saving = false));
     },
-    remove(item) {
-      if (!confirm('Delete this brand?')) return;
-      api.delete(`/brands/${item.id}`)
-        .then(() => { this.fetch(); this.notify('Deleted'); })
-        .catch(() => this.notify('Delete failed', 'error'));
+    openDelete(item) { this.confirm = { show: true, item, loading: false }; },
+    confirmDelete() {
+      if (!this.confirm.item) return;
+      this.confirm.loading = true;
+      api.delete(`/brands/${this.confirm.item.id}`)
+        .then(() => { this.fetch(); this.notify('Deleted'); this.confirm.show = false; })
+        .catch(() => this.notify('Delete failed', 'error'))
+        .finally(() => { this.confirm.loading = false; this.confirm.item = null; });
     },
   },
 };

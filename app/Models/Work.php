@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\URL;
 
 class Work extends Model
 {
@@ -14,5 +15,9 @@ class Work extends Model
         'category',
         'is_active',
     ];
-    //
+
+    public function getProjectImageAttribute($value)
+    {
+        return $value ? url($value) : null;
+    }
 }
