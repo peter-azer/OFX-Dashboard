@@ -14,7 +14,7 @@ class ServiceController extends Controller
      */
     public function index()
     {
-        return Service::all();
+        return Service::orderBy('order')->get();
     }
 
     /**
@@ -25,7 +25,9 @@ class ServiceController extends Controller
         $validated = $request->validate([
             'service_name' => 'required|string',
             'short_description' => 'required|string',
-            'icon_url' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif,svg|max:4096',
+            'service_name_ar' => 'required|string',
+            'short_description_ar' => 'required|string',
+            'icon_url' => 'required|image|mimes:jpeg,png,jpg,webp,gif,svg|max:4096',
             'order' => 'nullable|integer',
             'is_active' => 'boolean',
         ]);
@@ -54,6 +56,8 @@ class ServiceController extends Controller
         $validated = $request->validate([
             'service_name' => 'required|string',
             'short_description' => 'required|string',
+            'service_name_ar' => 'required|string',
+            'short_description_ar' => 'required|string',
             'icon_url' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif,svg|max:4096',
             'order' => 'nullable|integer',
             'is_active' => 'boolean',

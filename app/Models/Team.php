@@ -11,10 +11,10 @@ class Team extends Model
         'member_name',
         'position',
         'bio',
+        'member_name_ar',
+        'position_ar',
+        'bio_ar',
         'photo_url',
-        'facebook_link',
-        'linkedin_link',
-        'twitter_link',
         'is_active',
     ];
 

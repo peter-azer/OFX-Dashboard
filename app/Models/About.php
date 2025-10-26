@@ -10,6 +10,8 @@ class About extends Model
     protected $fillable = [
         'title',
         'description',
+        'title_ar',
+        'description_ar',
         'image_url',
         'video_url',
         'is_active',

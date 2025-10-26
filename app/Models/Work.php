@@ -10,9 +10,12 @@ class Work extends Model
     protected $fillable = [
         'project_title',
         'project_description',
+        'category',
+        'project_title_ar',
+        'project_description_ar',
+        'category_ar',
         'project_image',
         'project_link',
-        'category',
         'is_active',
     ];
 

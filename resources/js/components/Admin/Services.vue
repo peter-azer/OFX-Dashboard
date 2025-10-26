@@ -25,7 +25,9 @@
         <v-card-text>
           <v-form @submit.prevent="save">
             <v-text-field v-model="form.service_name" label="Service Name" required />
+            <v-text-field v-model="form.service_name_ar" label="Service Name (AR)" required />
             <v-textarea v-model="form.short_description" label="Short Description" required rows="3" />
+            <v-textarea v-model="form.short_description_ar" label="Short Description (AR)" required rows="3" />
             <v-file-input
               v-model="form.icon_url"
               label="Upload Icon"
@@ -33,6 +35,7 @@
               prepend-icon="fas fa-image"
               show-size
               clearable
+              :required="!editing"
             />
             <v-text-field v-model.number="form.order" type="number" label="Order" />
             <v-switch v-model="form.is_active" :true-value="true" :false-value="false" label="Active" />
@@ -62,7 +65,7 @@ export default {
       dialog: false,
       editing: false,
       currentId: null,
-      form: { service_name: '', short_description: '', icon_url: null, order: 0, is_active: true },
+      form: { service_name: '', service_name_ar: '', short_description: '', short_description_ar: '', icon_url: null, order: 0, is_active: true },
       headers: [
         { title: 'ID', key: 'id' },
         { title: 'Name', key: 'service_name' },
@@ -82,13 +85,15 @@ export default {
       this.loading = true;
       api.get('/services').then(res => this.items = res.data).finally(() => this.loading = false);
     },
-    openCreate() { this.editing = false; this.currentId = null; this.form = { service_name: '', short_description: '', icon_url: null, order: 0, is_active: true }; this.dialog = true; },
-    openEdit(item) { this.editing = true; this.currentId = item.id; this.form = { service_name: item.service_name, short_description: item.short_description, icon_url: null, order: item.order, is_active: item.is_active }; this.dialog = true; },
+    openCreate() { this.editing = false; this.currentId = null; this.form = { service_name: '', service_name_ar: '', short_description: '', short_description_ar: '', icon_url: null, order: 0, is_active: true }; this.dialog = true; },
+    openEdit(item) { this.editing = true; this.currentId = item.id; this.form = { service_name: item.service_name, service_name_ar: item.service_name_ar, short_description: item.short_description, short_description_ar: item.short_description_ar, icon_url: null, order: item.order, is_active: item.is_active }; this.dialog = true; },
     save() {
       this.saving = true;
       const fd = new FormData();
       fd.append('service_name', this.form.service_name);
+      fd.append('service_name_ar', this.form.service_name_ar);
       fd.append('short_description', this.form.short_description);
+      fd.append('short_description_ar', this.form.short_description_ar);
       const iconFile = Array.isArray(this.form.icon_url) ? this.form.icon_url[0] : this.form.icon_url;
       if (iconFile instanceof File) fd.append('icon_url', iconFile);
       if (this.form.order !== null && this.form.order !== undefined) fd.append('order', this.form.order);

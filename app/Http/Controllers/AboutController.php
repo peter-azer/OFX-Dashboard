@@ -25,6 +25,8 @@ class AboutController extends Controller
         $validated = $request->validate([
             'title' => 'required|string',
             'description' => 'required|string',
+            'title_ar' => 'required|string',
+            'description_ar' => 'required|string',
             'image_url' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:4096',
             'video_url' => 'nullable|string',
             'is_active' => 'boolean',
@@ -54,6 +56,8 @@ class AboutController extends Controller
         $validated = $request->validate([
             'title' => 'required|string',
             'description' => 'required|string',
+            'title_ar' => 'required|string',
+            'description_ar' => 'required|string',
             'image_url' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:4096',
             'video_url' => 'nullable|string',
             'is_active' => 'boolean',
@@ -93,3 +97,4 @@ class AboutController extends Controller
         return response()->noContent();
     }
 }
+

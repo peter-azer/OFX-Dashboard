@@ -25,7 +25,9 @@
         <v-card-text>
           <v-form @submit.prevent="save">
             <v-text-field v-model="form.title" label="Title" required />
+            <v-text-field v-model="form.title_ar" label="Title (AR)" required />
             <v-textarea v-model="form.description" label="Description" required rows="4" />
+            <v-textarea v-model="form.description_ar" label="Description (AR)" required rows="4" />
             <v-file-input
               v-model="form.image_url"
               label="Upload Image"
@@ -74,7 +76,7 @@ export default {
       dialog: false,
       editing: false,
       currentId: null,
-      form: { title: '', description: '', image_url: null, video_url: '', is_active: true },
+      form: { title: '', title_ar: '', description: '', description_ar: '', image_url: null, video_url: '', is_active: true },
       confirm: { show: false, item: null, loading: false },
       headers: [
         { title: 'ID', key: 'id' },
@@ -97,19 +99,21 @@ export default {
     },
     openCreate() {
       this.editing = false; this.currentId = null;
-      this.form = { title: '', description: '', image_url: null, video_url: '', is_active: true };
+      this.form = { title: '', title_ar: '', description: '', description_ar: '', image_url: null, video_url: '', is_active: true };
       this.dialog = true;
     },
     openEdit(item) {
       this.editing = true; this.currentId = item.id;
-      this.form = { title: item.title, description: item.description, image_url: null, video_url: item.video_url, is_active: item.is_active };
+      this.form = { title: item.title, title_ar: item.title_ar, description: item.description, description_ar: item.description_ar, image_url: null, video_url: item.video_url, is_active: item.is_active };
       this.dialog = true;
     },
     save() {
       this.saving = true;
       const fd = new FormData();
       fd.append('title', this.form.title);
+      fd.append('title_ar', this.form.title_ar);
       fd.append('description', this.form.description);
+      fd.append('description_ar', this.form.description_ar);
       const imgFile = Array.isArray(this.form.image_url) ? this.form.image_url[0] : this.form.image_url;
       if (imgFile instanceof File) {
         fd.append('image_url', imgFile);

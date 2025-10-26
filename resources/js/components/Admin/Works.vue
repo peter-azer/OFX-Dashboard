@@ -25,7 +25,9 @@
         <v-card-text>
           <v-form @submit.prevent="save">
             <v-text-field v-model="form.project_title" label="Project Title" required />
+            <v-text-field v-model="form.project_title_ar" label="Project Title (AR)" required />
             <v-textarea v-model="form.project_description" label="Project Description" required rows="4" />
+            <v-textarea v-model="form.project_description_ar" label="Project Description (AR)" required rows="4" />
             <v-file-input
               v-model="form.project_image"
               label="Upload Project Image"
@@ -33,9 +35,11 @@
               prepend-icon="fas fa-image"
               show-size
               clearable
+              :required="!editing"
             />
             <v-text-field v-model="form.project_link" label="Project Link" />
             <v-text-field v-model="form.category" label="Category" required />
+            <v-text-field v-model="form.category_ar" label="Category (AR)" required />
             <v-switch v-model="form.is_active" :true-value="true" :false-value="false" label="Active" />
           </v-form>
         </v-card-text>
@@ -75,7 +79,7 @@ export default {
       dialog: false,
       editing: false,
       currentId: null,
-      form: { project_title: '', project_description: '', project_image: null, project_link: '', category: '', is_active: true },
+      form: { project_title: '', project_title_ar: '', project_description: '', project_description_ar: '', project_image: null, project_link: '', category: '', category_ar: '', is_active: true },
       confirm: { show: false, item: null, loading: false },
       headers: [
         { title: 'ID', key: 'id' },
@@ -92,17 +96,20 @@ export default {
   methods: {
     notify(text, color = 'success') { this.snackbar = { show: true, text, color }; },
     fetch() { this.loading = true; api.get('/works').then(res => this.items = res.data).finally(() => this.loading = false); },
-    openCreate() { this.editing = false; this.currentId = null; this.form = { project_title: '', project_description: '', project_image: null, project_link: '', category: '', is_active: true }; this.dialog = true; },
-    openEdit(item) { this.editing = true; this.currentId = item.id; this.form = { project_title: item.project_title, project_description: item.project_description, project_image: null, project_link: item.project_link, category: item.category, is_active: item.is_active }; this.dialog = true; },
+    openCreate() { this.editing = false; this.currentId = null; this.form = { project_title: '', project_title_ar: '', project_description: '', project_description_ar: '', project_image: null, project_link: '', category: '', category_ar: '', is_active: true }; this.dialog = true; },
+    openEdit(item) { this.editing = true; this.currentId = item.id; this.form = { project_title: item.project_title, project_title_ar: item.project_title_ar, project_description: item.project_description, project_description_ar: item.project_description_ar, project_image: null, project_link: item.project_link, category: item.category, category_ar: item.category_ar, is_active: item.is_active }; this.dialog = true; },
     save() {
       this.saving = true;
       const fd = new FormData();
       fd.append('project_title', this.form.project_title);
+      fd.append('project_title_ar', this.form.project_title_ar);
       fd.append('project_description', this.form.project_description);
+      fd.append('project_description_ar', this.form.project_description_ar);
       const imgFile = Array.isArray(this.form.project_image) ? this.form.project_image[0] : this.form.project_image;
       if (imgFile instanceof File) fd.append('project_image', imgFile);
       if (this.form.project_link) fd.append('project_link', this.form.project_link);
       fd.append('category', this.form.category);
+      fd.append('category_ar', this.form.category_ar);
       fd.append('is_active', this.form.is_active ? '1' : '0');
 
       const req = this.editing

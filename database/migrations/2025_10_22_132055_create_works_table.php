@@ -15,9 +15,12 @@ return new class extends Migration
             $table->id();
             $table->string('project_title');
             $table->text('project_description');
+            $table->string('category');
+            $table->string('project_title_ar');
+            $table->text('project_description_ar');
+            $table->string('category_ar');
             $table->string('project_image');
             $table->string('project_link')->nullable();
-            $table->string('category');
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

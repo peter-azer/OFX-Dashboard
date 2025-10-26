@@ -14,7 +14,7 @@ class BrandController extends Controller
      */
     public function index()
     {
-        return Brand::all();
+        return Brand::orderBy('order')->get();
     }
 
     /**
@@ -24,7 +24,8 @@ class BrandController extends Controller
     {
         $validated = $request->validate([
             'brand_name' => 'required|string',
-            'logo_url' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:4096',
+            'brand_name_ar' => 'required|string',
+            'logo_url' => 'required|image|mimes:jpeg,png,jpg,webp,gif|max:4096',
             'order' => 'nullable|integer',
             'is_active' => 'boolean',
         ]);
@@ -52,6 +53,7 @@ class BrandController extends Controller
     {
         $validated = $request->validate([
             'brand_name' => 'required|string',
+            'brand_name_ar' => 'required|string',
             'logo_url' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:4096',
             'order' => 'nullable|integer',
             'is_active' => 'boolean',

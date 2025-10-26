@@ -26,7 +26,9 @@
           <v-form @submit.prevent="save">
             <v-text-field v-model="form.member_name" label="Name" required />
             <v-text-field v-model="form.position" label="Position" required />
+            <v-text-field v-model="form.position_ar" label="Position (AR)" required />
             <v-textarea v-model="form.bio" label="Bio" rows="3" required />
+            <v-textarea v-model="form.bio_ar" label="Bio (AR)" rows="3" required />
             <v-file-input
               v-model="form.photo_url"
               label="Upload Photo"
@@ -34,10 +36,8 @@
               prepend-icon="fas fa-image"
               show-size
               clearable
+              :required="!editing"
             />
-            <v-text-field v-model="form.facebook_link" label="Facebook Link" />
-            <v-text-field v-model="form.linkedin_link" label="LinkedIn Link" />
-            <v-text-field v-model="form.twitter_link" label="Twitter Link" />
             <v-switch v-model="form.is_active" :true-value="true" :false-value="false" label="Active" />
           </v-form>
         </v-card-text>
@@ -65,10 +65,7 @@ export default {
       dialog: false,
       editing: false,
       currentId: null,
-      form: {
-        member_name: '', position: '', bio: '', photo_url: null,
-        facebook_link: '', linkedin_link: '', twitter_link: '', is_active: true,
-      },
+      form: { member_name: '', member_name_ar: '', position: '', position_ar: '', bio: '', bio_ar: '', photo_url: null, is_active: true },
       headers: [
         { title: 'ID', key: 'id' },
         { title: 'Name', key: 'member_name' },
@@ -85,19 +82,19 @@ export default {
   methods: {
     notify(text, color = 'success') { this.snackbar = { show: true, text, color }; },
     fetch() { this.loading = true; api.get('/teams').then(res => this.items = res.data).finally(() => this.loading = false); },
-    openCreate() { this.editing = false; this.currentId = null; this.form = { member_name: '', position: '', bio: '', photo_url: null, facebook_link: '', linkedin_link: '', twitter_link: '', is_active: true }; this.dialog = true; },
-    openEdit(item) { this.editing = true; this.currentId = item.id; this.form = { member_name: item.member_name, position: item.position, bio: item.bio, photo_url: null, facebook_link: item.facebook_link, linkedin_link: item.linkedin_link, twitter_link: item.twitter_link, is_active: item.is_active }; this.dialog = true; },
+    openCreate() { this.editing = false; this.currentId = null; this.form = { member_name: '', member_name_ar: '', position: '', position_ar: '', bio: '', bio_ar: '', photo_url: null, is_active: true }; this.dialog = true; },
+    openEdit(item) { this.editing = true; this.currentId = item.id; this.form = { member_name: item.member_name, member_name_ar: item.member_name_ar, position: item.position, position_ar: item.position_ar, bio: item.bio, bio_ar: item.bio_ar, photo_url: null, is_active: item.is_active }; this.dialog = true; },
     save() {
       this.saving = true;
       const fd = new FormData();
       fd.append('member_name', this.form.member_name);
+      fd.append('member_name_ar', this.form.member_name_ar);
       fd.append('position', this.form.position);
+      fd.append('position_ar', this.form.position_ar);
       fd.append('bio', this.form.bio);
+      fd.append('bio_ar', this.form.bio_ar);
       const imgFile = Array.isArray(this.form.photo_url) ? this.form.photo_url[0] : this.form.photo_url;
       if (imgFile instanceof File) fd.append('photo_url', imgFile);
-      if (this.form.facebook_link) fd.append('facebook_link', this.form.facebook_link);
-      if (this.form.linkedin_link) fd.append('linkedin_link', this.form.linkedin_link);
-      if (this.form.twitter_link) fd.append('twitter_link', this.form.twitter_link);
       fd.append('is_active', this.form.is_active ? '1' : '0');
 
       const req = this.editing

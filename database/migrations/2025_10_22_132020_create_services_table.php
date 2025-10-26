@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('service_name');
             $table->text('short_description');
+            $table->string('service_name_ar');
+            $table->text('short_description_ar');
             $table->string('icon_url');
             $table->integer('order')->default(0);
             $table->boolean('is_active')->default(true);

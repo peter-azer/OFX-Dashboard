@@ -25,6 +25,7 @@
         <v-card-text>
           <v-form @submit.prevent="save">
             <v-text-field v-model="form.brand_name" label="Brand Name" required />
+            <v-text-field v-model="form.brand_name_ar" label="Brand Name (AR)" required />
             <v-file-input
               v-model="form.logo_url"
               label="Upload Logo"
@@ -32,6 +33,7 @@
               prepend-icon="fas fa-image"
               show-size
               clearable
+              :required="!editing"
             />
             <v-text-field v-model.number="form.order" type="number" label="Order" />
             <v-switch v-model="form.is_active" :true-value="true" :false-value="false" label="Active" />
@@ -73,7 +75,7 @@ export default {
       dialog: false,
       editing: false,
       currentId: null,
-      form: { brand_name: '', logo_url: null, order: 0, is_active: true },
+      form: { brand_name: '', brand_name_ar: '', logo_url: null, order: 0, is_active: true },
       confirm: { show: false, item: null, loading: false },
       headers: [
         { title: 'ID', key: 'id' },
@@ -102,19 +104,20 @@ export default {
     openCreate() {
       this.editing = false;
       this.currentId = null;
-      this.form = { brand_name: '', logo_url: null, order: 0, is_active: true };
+      this.form = { brand_name: '', brand_name_ar: '', logo_url: null, order: 0, is_active: true };
       this.dialog = true;
     },
     openEdit(item) {
       this.editing = true;
       this.currentId = item.id;
-      this.form = { brand_name: item.brand_name, logo_url: null, order: item.order, is_active: item.is_active };
+      this.form = { brand_name: item.brand_name, brand_name_ar: item.brand_name_ar, logo_url: null, order: item.order, is_active: item.is_active };
       this.dialog = true;
     },
     save() {
       this.saving = true;
       const fd = new FormData();
       fd.append('brand_name', this.form.brand_name);
+      fd.append('brand_name_ar', this.form.brand_name_ar);
       const logoFile = Array.isArray(this.form.logo_url) ? this.form.logo_url[0] : this.form.logo_url;
       if (logoFile instanceof File) fd.append('logo_url', logoFile);
       if (this.form.order !== null && this.form.order !== undefined) fd.append('order', this.form.order);

@@ -10,6 +10,8 @@ class Service extends Model
     protected $fillable = [
         'service_name',
         'short_description',
+        'service_name_ar',
+        'short_description_ar',
         'icon_url',
         'order',
         'is_active',

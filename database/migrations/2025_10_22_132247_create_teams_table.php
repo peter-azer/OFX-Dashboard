@@ -16,10 +16,10 @@ return new class extends Migration
             $table->string('member_name');
             $table->string('position');
             $table->text('bio');
+            $table->string('member_name_ar');
+            $table->string('position_ar');
+            $table->text('bio_ar');
             $table->string('photo_url');
-            $table->string('facebook_link')->nullable();
-            $table->string('linkedin_link')->nullable();
-            $table->string('twitter_link')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

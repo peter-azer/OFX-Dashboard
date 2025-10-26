@@ -14,7 +14,7 @@ class HeroController extends Controller
      */
     public function index()
     {
-        return Hero::all();
+        return Hero::orderBy('order')->get();
     }
 
     /**
@@ -26,8 +26,11 @@ class HeroController extends Controller
             'title' => 'required|string',
             'subtitle' => 'required|string',
             'button_text' => 'required|string',
+            'title_ar' => 'required|string',
+            'subtitle_ar' => 'required|string',
+            'button_text_ar' => 'required|string',
             'button_link' => 'required|string',
-            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:4096',
+            'image_url' => 'required|image|mimes:jpeg,png,jpg,webp,gif|max:4096',
             'order' => 'nullable|integer',
             'is_active' => 'boolean',
         ]);
@@ -57,6 +60,9 @@ class HeroController extends Controller
             'title' => 'required|string',
             'subtitle' => 'required|string',
             'button_text' => 'required|string',
+            'title_ar' => 'required|string',
+            'subtitle_ar' => 'required|string',
+            'button_text_ar' => 'required|string',
             'button_link' => 'required|string',
             'image_url' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:4096',
             'order' => 'nullable|integer',

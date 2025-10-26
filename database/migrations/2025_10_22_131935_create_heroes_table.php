@@ -16,6 +16,9 @@ return new class extends Migration
             $table->string('title');
             $table->string('subtitle');
             $table->string('button_text');
+            $table->string('title_ar');
+            $table->string('subtitle_ar');
+            $table->string('button_text_ar');
             $table->string('button_link');
             $table->string('image_url');
             $table->integer('order')->default(0);

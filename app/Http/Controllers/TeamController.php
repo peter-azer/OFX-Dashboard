@@ -26,10 +26,10 @@ class TeamController extends Controller
             'member_name' => 'required|string',
             'position' => 'required|string',
             'bio' => 'required|string',
-            'photo_url' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:4096',
-            'facebook_link' => 'nullable|string',
-            'linkedin_link' => 'nullable|string',
-            'twitter_link' => 'nullable|string',
+            'member_name_ar' => 'required|string',
+            'position_ar' => 'required|string',
+            'bio_ar' => 'required|string',
+            'photo_url' => 'required|image|mimes:jpeg,png,jpg,webp,gif|max:4096',
             'is_active' => 'boolean',
         ]);
 
@@ -58,10 +58,10 @@ class TeamController extends Controller
             'member_name' => 'required|string',
             'position' => 'required|string',
             'bio' => 'required|string',
+            'member_name_ar' => 'required|string',
+            'position_ar' => 'required|string',
+            'bio_ar' => 'required|string',
             'photo_url' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:4096',
-            'facebook_link' => 'nullable|string',
-            'linkedin_link' => 'nullable|string',
-            'twitter_link' => 'nullable|string',
             'is_active' => 'boolean',
         ]);
 

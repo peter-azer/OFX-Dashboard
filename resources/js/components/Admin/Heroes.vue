@@ -25,8 +25,11 @@
         <v-card-text>
           <v-form @submit.prevent="save">
             <v-text-field v-model="form.title" label="Title" required />
+            <v-text-field v-model="form.title_ar" label="Title (AR)" required />
             <v-text-field v-model="form.subtitle" label="Subtitle" required />
+            <v-text-field v-model="form.subtitle_ar" label="Subtitle (AR)" required />
             <v-text-field v-model="form.button_text" label="Button Text" required />
+            <v-text-field v-model="form.button_text_ar" label="Button Text (AR)" required />
             <v-text-field v-model="form.button_link" label="Button Link" required />
             <v-file-input
               v-model="form.image_url"
@@ -35,6 +38,7 @@
               prepend-icon="fas fa-image"
               show-size
               clearable
+              :required="!editing"
             />
             <v-text-field v-model.number="form.order" type="number" label="Order" />
             <v-switch v-model="form.is_active" :true-value="true" :false-value="false" label="Active" />
@@ -79,8 +83,11 @@ export default {
       confirm: { show: false, item: null, loading: false },
       form: {
         title: '',
+        title_ar: '',
         subtitle: '',
+        subtitle_ar: '',
         button_text: '',
+        button_text_ar: '',
         button_link: '',
         image_url: null,
         order: 0,
@@ -117,7 +124,7 @@ export default {
     openCreate() {
       this.editing = false;
       this.currentId = null;
-      this.form = { title: '', subtitle: '', button_text: '', button_link: '', image_url: null, order: 0, is_active: true };
+      this.form = { title: '', title_ar: '', subtitle: '', subtitle_ar: '', button_text: '', button_text_ar: '', button_link: '', image_url: null, order: 0, is_active: true };
       this.dialog = true;
     },
     openEdit(item) {
@@ -125,8 +132,11 @@ export default {
       this.currentId = item.id;
       this.form = {
         title: item.title,
+        title_ar: item.title_ar,
         subtitle: item.subtitle,
+        subtitle_ar: item.subtitle_ar,
         button_text: item.button_text,
+        button_text_ar: item.button_text_ar,
         button_link: item.button_link,
         image_url: null,
         order: item.order,
@@ -138,13 +148,14 @@ export default {
       this.saving = true;
       const fd = new FormData();
       fd.append('title', this.form.title);
+      fd.append('title_ar', this.form.title_ar);
       fd.append('subtitle', this.form.subtitle);
+      fd.append('subtitle_ar', this.form.subtitle_ar);
       fd.append('button_text', this.form.button_text);
+      fd.append('button_text_ar', this.form.button_text_ar);
       fd.append('button_link', this.form.button_link);
       const imgFile = Array.isArray(this.form.image_url) ? this.form.image_url[0] : this.form.image_url;
-      if (imgFile instanceof File) {
-        fd.append('image_url', imgFile);
-      }
+      if (imgFile instanceof File) { fd.append('image_url', imgFile); }
       if (this.form.order !== null && this.form.order !== undefined) fd.append('order', this.form.order);
       fd.append('is_active', this.form.is_active ? '1' : '0');
 

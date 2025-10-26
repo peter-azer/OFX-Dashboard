@@ -25,7 +25,10 @@ class WorkController extends Controller
         $validated = $request->validate([
             'project_title' => 'required|string',
             'project_description' => 'required|string',
-            'project_image' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:4096',
+            'project_title_ar' => 'required|string',
+            'project_description_ar' => 'required|string',
+            'category_ar' => 'required|string',
+            'project_image' => 'required|image|mimes:jpeg,png,jpg,webp,gif|max:4096',
             'project_link' => 'nullable|string',
             'category' => 'required|string',
             'is_active' => 'boolean',
@@ -55,6 +58,9 @@ class WorkController extends Controller
         $validated = $request->validate([
             'project_title' => 'required|string',
             'project_description' => 'required|string',
+            'project_title_ar' => 'required|string',
+            'project_description_ar' => 'required|string',
+            'category_ar' => 'required|string',
             'project_image' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:4096',
             'project_link' => 'nullable|string',
             'category' => 'required|string',
