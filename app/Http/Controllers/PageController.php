@@ -15,9 +15,9 @@ class PageController extends Controller
     public function home()
     {
         return response()->json([
-            'hero' => Hero::first(),
+            'hero' => Hero::all(),
             'brands' => Brand::all(),
-            'about' => About::first(),
+            'about' => About::all(),
             'services' => Service::all(),
             'works' => Work::all(),
             'teams' => Team::all(),
