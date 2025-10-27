@@ -17,6 +17,9 @@ class Service extends Model
         'is_active',
     ];
 
+    public function work(){
+        return $this->hasMany(Work::class);
+    }
     public function getIconUrlAttribute($value)
     {
         return $value ? url($value) : null;

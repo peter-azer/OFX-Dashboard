@@ -14,7 +14,7 @@ class WorkController extends Controller
      */
     public function index()
     {
-        return Work::all();
+        return Work::with('service')->get();
     }
 
     /**
@@ -27,10 +27,9 @@ class WorkController extends Controller
             'project_description' => 'required|string',
             'project_title_ar' => 'required|string',
             'project_description_ar' => 'required|string',
-            'category_ar' => 'required|string',
             'project_image' => 'required|image|mimes:jpeg,png,jpg,webp,gif|max:4096',
             'project_link' => 'nullable|string',
-            'category' => 'required|string',
+            'service_id' => 'required|exists:services,id',
             'is_active' => 'boolean',
         ]);
 
@@ -39,7 +38,8 @@ class WorkController extends Controller
             $validated['project_image'] = URL::to(Storage::url($path));
         }
 
-        return Work::create($validated);
+        $work = Work::create($validated);
+        return $work->load('service');
     }
 
     /**
@@ -47,7 +47,7 @@ class WorkController extends Controller
      */
     public function show(Work $work)
     {
-        return $work;
+        return $work->load('service');
     }
 
     /**
@@ -60,10 +60,9 @@ class WorkController extends Controller
             'project_description' => 'required|string',
             'project_title_ar' => 'required|string',
             'project_description_ar' => 'required|string',
-            'category_ar' => 'required|string',
             'project_image' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:4096',
             'project_link' => 'nullable|string',
-            'category' => 'required|string',
+            'service_id' => 'required|exists:services,id',
             'is_active' => 'boolean',
         ]);
 

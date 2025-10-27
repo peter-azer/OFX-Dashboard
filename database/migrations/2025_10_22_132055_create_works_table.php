@@ -13,14 +13,20 @@ return new class extends Migration
     {
         Schema::create('works', function (Blueprint $table) {
             $table->id();
+            //project title
             $table->string('project_title');
+            //project description
             $table->text('project_description');
-            $table->string('category');
+            //category
+            $table->foreignId('service_id')->constrained('services')->cascadeOnDelete();
+            //arabic
             $table->string('project_title_ar');
             $table->text('project_description_ar');
-            $table->string('category_ar');
+            //project image
             $table->string('project_image');
+            //project link
             $table->string('project_link')->nullable();
+            //is active
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

@@ -13,6 +13,9 @@
       <template #item.project_image="{ item }">
         <v-img :src="item.project_image" width="60" height="40" cover></v-img>
       </template>
+      <template #item.service="{ item }">
+        {{ item.service?.service_name || '-' }}
+      </template>
       <template #item.actions="{ item }">
         <v-btn size="small" variant="text" icon="fas fa-pen" @click="openEdit(item)" />
         <v-btn size="small" variant="text" color="error" icon="fas fa-trash" @click="openDelete(item)" />
@@ -38,8 +41,14 @@
               :required="!editing"
             />
             <v-text-field v-model="form.project_link" label="Project Link" />
-            <v-text-field v-model="form.category" label="Category" required />
-            <v-text-field v-model="form.category_ar" label="Category (AR)" required />
+            <v-select
+              v-model="form.service_id"
+              :items="services"
+              item-title="service_name"
+              item-value="id"
+              label="Service"
+              required
+            />
             <v-switch v-model="form.is_active" :true-value="true" :false-value="false" label="Active" />
           </v-form>
         </v-card-text>
@@ -76,28 +85,30 @@ export default {
       loading: false,
       saving: false,
       items: [],
+      services: [],
       dialog: false,
       editing: false,
       currentId: null,
-      form: { project_title: '', project_title_ar: '', project_description: '', project_description_ar: '', project_image: null, project_link: '', category: '', category_ar: '', is_active: true },
+      form: { project_title: '', project_title_ar: '', project_description: '', project_description_ar: '', project_image: null, project_link: '', service_id: null, is_active: true },
       confirm: { show: false, item: null, loading: false },
       headers: [
         { title: 'ID', key: 'id' },
         { title: 'Title', key: 'project_title' },
         { title: 'Image', key: 'project_image' },
-        { title: 'Category', key: 'category' },
+        { title: 'Service', key: 'service' },
         { title: 'Active', key: 'is_active' },
         { title: 'Actions', key: 'actions', sortable: false },
       ],
       snackbar: { show: false, text: '', color: 'success' },
     };
   },
-  created() { this.fetch(); },
+  created() { this.fetch(); this.fetchServices(); },
   methods: {
     notify(text, color = 'success') { this.snackbar = { show: true, text, color }; },
     fetch() { this.loading = true; api.get('/works').then(res => this.items = res.data).finally(() => this.loading = false); },
-    openCreate() { this.editing = false; this.currentId = null; this.form = { project_title: '', project_title_ar: '', project_description: '', project_description_ar: '', project_image: null, project_link: '', category: '', category_ar: '', is_active: true }; this.dialog = true; },
-    openEdit(item) { this.editing = true; this.currentId = item.id; this.form = { project_title: item.project_title, project_title_ar: item.project_title_ar, project_description: item.project_description, project_description_ar: item.project_description_ar, project_image: null, project_link: item.project_link, category: item.category, category_ar: item.category_ar, is_active: item.is_active }; this.dialog = true; },
+    fetchServices() { api.get('/services').then(res => this.services = res.data); },
+    openCreate() { this.editing = false; this.currentId = null; this.form = { project_title: '', project_title_ar: '', project_description: '', project_description_ar: '', project_image: null, project_link: '', service_id: null, is_active: true }; this.dialog = true; },
+    openEdit(item) { this.editing = true; this.currentId = item.id; this.form = { project_title: item.project_title, project_title_ar: item.project_title_ar, project_description: item.project_description, project_description_ar: item.project_description_ar, project_image: null, project_link: item.project_link, service_id: item.service_id || item.service?.id || null, is_active: item.is_active }; this.dialog = true; },
     save() {
       this.saving = true;
       const fd = new FormData();
@@ -108,8 +119,7 @@ export default {
       const imgFile = Array.isArray(this.form.project_image) ? this.form.project_image[0] : this.form.project_image;
       if (imgFile instanceof File) fd.append('project_image', imgFile);
       if (this.form.project_link) fd.append('project_link', this.form.project_link);
-      fd.append('category', this.form.category);
-      fd.append('category_ar', this.form.category_ar);
+      if (this.form.service_id) fd.append('service_id', String(this.form.service_id));
       fd.append('is_active', this.form.is_active ? '1' : '0');
 
       const req = this.editing

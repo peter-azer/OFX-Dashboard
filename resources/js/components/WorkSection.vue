@@ -5,7 +5,7 @@
       <div v-for="work in works" :key="work.id" class="work-item">
         <img :src="work.image_url" :alt="work.title" />
         <h3>{{ work.title }}</h3>
-        <p>{{ work.category }}</p>
+        <p>{{ work.service?.service_name || '' }}</p>
       </div>
     </div>
   </section>
