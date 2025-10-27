@@ -9,10 +9,10 @@ class Team extends Model
 {
     protected $fillable = [
         'member_name',
-        'position',
-        'bio',
         'member_name_ar',
+        'position',
         'position_ar',
+        'bio',
         'bio_ar',
         'photo_url',
         'is_active',

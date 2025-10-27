@@ -24,12 +24,12 @@ class TeamController extends Controller
     {
         $validated = $request->validate([
             'member_name' => 'required|string',
-            'position' => 'required|string',
-            'bio' => 'required|string',
             'member_name_ar' => 'required|string',
+            'position' => 'required|string',
             'position_ar' => 'required|string',
+            'bio' => 'required|string',
             'bio_ar' => 'required|string',
-            'photo_url' => 'required|image|mimes:jpeg,png,jpg,webp,gif|max:4096',
+            'photo_url' => 'sometimes|image|mimes:jpeg,png,jpg,webp,gif|max:4096',
             'is_active' => 'boolean',
         ]);
 

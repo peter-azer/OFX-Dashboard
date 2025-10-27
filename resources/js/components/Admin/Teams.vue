@@ -25,6 +25,7 @@
         <v-card-text>
           <v-form @submit.prevent="save">
             <v-text-field v-model="form.member_name" label="Name" required />
+            <v-text-field v-model="form.member_name_ar" label="Name (AR)" required />
             <v-text-field v-model="form.position" label="Position" required />
             <v-text-field v-model="form.position_ar" label="Position (AR)" required />
             <v-textarea v-model="form.bio" label="Bio" rows="3" required />
