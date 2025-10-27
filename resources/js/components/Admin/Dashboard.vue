@@ -18,6 +18,8 @@
         <v-list-item :to="{ name: 'admin.services' }" prepend-icon="fas fa-briefcase" title="Services" />
         <v-list-item :to="{ name: 'admin.works' }" prepend-icon="fas fa-briefcase" title="Works" />
         <v-list-item :to="{ name: 'admin.teams' }" prepend-icon="fas fa-users" title="Teams" />
+        <v-list-item :to="{ name: 'admin.phone-contacts' }" prepend-icon="fas fa-phone" title="Phone Contacts" />
+        <v-list-item :to="{ name: 'admin.whatsapp-contacts' }" prepend-icon="fab fa-whatsapp" title="WhatsApp Contacts" />
       </v-list>
     </v-navigation-drawer>
 
