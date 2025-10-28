@@ -52,7 +52,7 @@ class PhoneContactsController extends Controller
 
      public function recordPhoneNumber(Request $request, PhoneContacts $phone_contact){
         $phone_contact->records()->create([
-            'phone_contact_id' => $phone_contact->id,
+            'phone_contacts_id' => $phone_contact->id,
         ]);
 
         return response()->json([

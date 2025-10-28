@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class PhoneRecord extends Model
 {
     protected $fillable = [
-        'phone_contact_id',
+        'phone_contacts_id',
     ];
 
     public function phoneContact()

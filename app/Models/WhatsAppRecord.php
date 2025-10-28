@@ -8,7 +8,7 @@ class WhatsAppRecord extends Model
 {
     
     protected $fillable = [
-        'whats_app_contact_id',
+        'whats_app_contacts_id',
     ];
 
     public function whatsAppContact()
