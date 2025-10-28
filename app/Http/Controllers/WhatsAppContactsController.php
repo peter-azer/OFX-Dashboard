@@ -52,7 +52,7 @@ class WhatsAppContactsController extends Controller
 
      public function recordWhatsAppNumber(Request $request, WhatsAppContacts $whatsapp_contact){
         $whatsapp_contact->records()->create([
-            'whatsapp_contact_id' => $whatsapp_contact->id,
+            'whats_app_contact_id' => $whatsapp_contact->id,
         ]);
 
         return response()->json([
