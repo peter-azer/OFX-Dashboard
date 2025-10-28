@@ -13,6 +13,6 @@ class WhatsAppRecord extends Model
 
     public function whatsAppContact()
     {
-        return $this->belongsTo(WhatsAppContacts::class);
+        return $this->belongsTo(WhatsAppContacts::class, 'whats_app_contact_id');
     }
 }

@@ -12,6 +12,6 @@ class PhoneRecord extends Model
 
     public function phoneContact()
     {
-        return $this->belongsTo(PhoneContacts::class);
+        return $this->belongsTo(PhoneContacts::class, 'phone_contact_id');
     }
 }
