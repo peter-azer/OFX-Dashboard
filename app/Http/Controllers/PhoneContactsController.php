@@ -40,8 +40,6 @@ class PhoneContactsController extends Controller
             return response()->json(['message' => 'No contacts found'], 404);
         }
 
-        dd($nextContact->phone);
-
         return response()->json([
             'next_phone_number' => $nextContact->phone,
             'contact_id' => $nextContact->id,
