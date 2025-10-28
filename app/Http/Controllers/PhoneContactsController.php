@@ -25,8 +25,8 @@ class PhoneContactsController extends Controller
     {
         $lastRecord = PhoneRecord::latest('id')->first();
 
-        if ($lastRecord && $lastRecord->phone_contact_id) {
-            $nextContact = PhoneContacts::where('id', '>', $lastRecord->phone_contact_id)
+        if ($lastRecord && $lastRecord->phone_contacts_id) {
+            $nextContact = PhoneContacts::where('id', '>', $lastRecord->phone_contacts_id)
                 ->orderBy('id')
                 ->first();
             if (!$nextContact) {

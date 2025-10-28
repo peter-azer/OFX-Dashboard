@@ -25,8 +25,8 @@ class WhatsAppContactsController extends Controller
     {
         $lastRecord = WhatsAppRecord::latest('id')->first();
 
-        if ($lastRecord && $lastRecord->whats_app_contact_id) {
-            $nextContact = WhatsAppContacts::where('id', '>', $lastRecord->whats_app_contact_id)
+        if ($lastRecord && $lastRecord->whats_app_contacts_id) {
+            $nextContact = WhatsAppContacts::where('id', '>', $lastRecord->whats_app_contacts_id)
                 ->orderBy('id')
                 ->first();
             if (!$nextContact) {
