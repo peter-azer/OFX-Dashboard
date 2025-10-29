@@ -17,8 +17,16 @@
         {{ item.service?.service_name || '-' }}
       </template>
       <template #item.actions="{ item }">
-        <v-btn size="small" variant="text" icon="fas fa-pen" @click="openEdit(item)" />
-        <v-btn size="small" variant="text" color="error" icon="fas fa-trash" @click="openDelete(item)" />
+        <v-btn size="small" variant="text" icon @click="openEdit(item)">
+          <v-icon size="18">
+            <PencilSquareIcon />
+          </v-icon>
+        </v-btn>
+        <v-btn size="small" variant="text" color="error" icon @click="openDelete(item)">
+          <v-icon size="18">
+            <TrashIcon />
+          </v-icon>
+        </v-btn>
       </template>
     </v-data-table>
 
@@ -35,11 +43,14 @@
               v-model="form.project_image"
               label="Upload Project Image"
               accept="image/*"
-              prepend-icon="fas fa-image"
               show-size
               clearable
               :required="!editing"
-            />
+            >
+              <template #prepend>
+                <PhotoIcon class="h-5 w-5" />
+              </template>
+            </v-file-input>
             <v-text-field v-model="form.project_link" label="Project Link" />
             <v-select
               v-model="form.service_id"
@@ -78,8 +89,10 @@
 
 <script>
 import api from '../../api';
+import { PencilSquareIcon, TrashIcon, PhotoIcon } from '@heroicons/vue/24/outline';
 
 export default {
+  components: { PencilSquareIcon, TrashIcon, PhotoIcon },
   data() {
     return {
       loading: false,

@@ -11,17 +11,25 @@
                             <v-text-field
                                 v-model="email"
                                 label="Email"
-                                prepend-icon="fas fa-user"
+                                
                                 type="email"
                                 required
-                            ></v-text-field>
+                            >
+                                <template #prepend>
+                                    <UserIcon class="h-5 w-5" />
+                                </template>
+                            </v-text-field>
                             <v-text-field
                                 v-model="password"
                                 label="Password"
-                                prepend-icon="fas fa-lock"
+                                
                                 type="password"
                                 required
-                            ></v-text-field>
+                            >
+                                <template #prepend>
+                                    <LockClosedIcon class="h-5 w-5" />
+                                </template>
+                            </v-text-field>
                             <v-btn type="submit" color="primary" block :loading="loading">Login</v-btn>
                         </v-form>
                     </v-card-text>
@@ -34,8 +42,10 @@
 
 <script>
 import api from '../../api';
+import { UserIcon, LockClosedIcon } from '@heroicons/vue/24/outline';
 
 export default {
+    components: { UserIcon, LockClosedIcon },
     data() {
         return {
             email: '',

@@ -11,8 +11,16 @@
 
     <v-data-table :items="items" :headers="headers" :loading="loading">
       <template #item.actions="{ item }">
-        <v-btn size="small" variant="text" icon="fas fa-pen" @click="openEdit(item)" />
-        <v-btn size="small" variant="text" color="error" icon="fas fa-trash" @click="openDelete(item)" />
+        <v-btn size="small" variant="text" @click="openEdit(item)">
+          <v-icon size="18">
+            <PencilSquareIcon class="h-5 w-5" />
+          </v-icon>
+        </v-btn>
+        <v-btn size="small" variant="text" color="error" @click="openDelete(item)">
+          <v-icon size="18">
+            <TrashIcon class="h-5 w-5" />
+          </v-icon>
+        </v-btn>
       </template>
     </v-data-table>
 
@@ -51,8 +59,10 @@
 
 <script>
 import api from '../../api';
+import { PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline';
 
 export default {
+  components: { PencilSquareIcon, TrashIcon },
   data() {
     return {
       loading: false,

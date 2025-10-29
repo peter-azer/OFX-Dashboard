@@ -4,22 +4,62 @@
       <v-app-bar-nav-icon variant="text" @click.stop="drawer = !drawer" />
       <v-toolbar-title>Admin Panel</v-toolbar-title>
       <v-spacer />
-      <v-btn icon="fas fa-right-from-bracket" @click="logout" :loading="loading" variant="text" />
+      <v-btn @click="logout" :loading="loading" variant="text" icon>
+        <v-icon size="20">
+          <ArrowRightOnRectangleIcon />
+        </v-icon>
+      </v-btn>
     </v-app-bar>
 
     <v-navigation-drawer v-model="drawer" permanent>
       <v-list-item title="OFX Dashboard" subtitle="Content Manager" />
       <v-divider />
       <v-list density="compact" nav>
-        <v-list-item :to="{ name: 'admin.dashboard' }" prepend-icon="fas fa-gauge" title="Dashboard" />
-        <v-list-item :to="{ name: 'admin.heroes' }" prepend-icon="fas fa-star" title="Heroes" />
-        <v-list-item :to="{ name: 'admin.brands' }" prepend-icon="fas fa-tags" title="Brands" />
-        <v-list-item :to="{ name: 'admin.abouts' }" prepend-icon="fas fa-circle-info" title="Abouts" />
-        <v-list-item :to="{ name: 'admin.services' }" prepend-icon="fas fa-briefcase" title="Services" />
-        <v-list-item :to="{ name: 'admin.works' }" prepend-icon="fas fa-briefcase" title="Works" />
-        <v-list-item :to="{ name: 'admin.teams' }" prepend-icon="fas fa-users" title="Teams" />
-        <v-list-item :to="{ name: 'admin.phone-contacts' }" prepend-icon="fas fa-phone" title="Phone Contacts" />
-        <v-list-item :to="{ name: 'admin.whatsapp-contacts' }" prepend-icon="fab fa-whatsapp" title="WhatsApp Contacts" />
+        <v-list-item :to="{ name: 'admin.dashboard' }" title="Dashboard">
+          <template #prepend>
+            <Squares2X2Icon class="h-5 w-5" />
+          </template>
+        </v-list-item>
+        <v-list-item :to="{ name: 'admin.heroes' }" title="Heroes">
+          <template #prepend>
+            <StarIcon class="h-5 w-5" />
+          </template>
+        </v-list-item>
+        <v-list-item :to="{ name: 'admin.brands' }" title="Brands">
+          <template #prepend>
+            <TagIcon class="h-5 w-5" />
+          </template>
+        </v-list-item>
+        <v-list-item :to="{ name: 'admin.abouts' }" title="Abouts">
+          <template #prepend>
+            <InformationCircleIcon class="h-5 w-5" />
+          </template>
+        </v-list-item>
+        <v-list-item :to="{ name: 'admin.services' }" title="Services">
+          <template #prepend>
+            <BriefcaseIcon class="h-5 w-5" />
+          </template>
+        </v-list-item>
+        <v-list-item :to="{ name: 'admin.works' }" title="Works">
+          <template #prepend>
+            <BriefcaseIcon class="h-5 w-5" />
+          </template>
+        </v-list-item>
+        <v-list-item :to="{ name: 'admin.teams' }" title="Teams">
+          <template #prepend>
+            <UsersIcon class="h-5 w-5" />
+          </template>
+        </v-list-item>
+        <v-list-item :to="{ name: 'admin.phone-contacts' }" title="Phone Contacts">
+          <template #prepend>
+            <PhoneIcon class="h-5 w-5" />
+          </template>
+        </v-list-item>
+        <v-list-item :to="{ name: 'admin.whatsapp-contacts' }" title="WhatsApp Contacts">
+          <template #prepend>
+            <ChatBubbleOvalLeftIcon class="h-5 w-5" />
+          </template>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
 
@@ -33,8 +73,10 @@
 
 <script>
 import api from '../../api';
+import { ArrowRightOnRectangleIcon, Squares2X2Icon, StarIcon, TagIcon, InformationCircleIcon, BriefcaseIcon, UsersIcon, PhoneIcon, ChatBubbleOvalLeftIcon } from '@heroicons/vue/24/outline';
 
 export default {
+  components: { ArrowRightOnRectangleIcon, Squares2X2Icon, StarIcon, TagIcon, InformationCircleIcon, BriefcaseIcon, UsersIcon, PhoneIcon, ChatBubbleOvalLeftIcon },
   data: () => ({
     drawer: true,
     loading: false,

@@ -14,8 +14,16 @@
         <v-img :src="item.icon_url" width="40" height="40" cover></v-img>
       </template>
       <template #item.actions="{ item }">
-        <v-btn size="small" variant="text" icon="fas fa-pen" @click="openEdit(item)" />
-        <v-btn size="small" variant="text" color="error" icon="fas fa-trash" @click="openDelete(item)" />
+        <v-btn size="small" variant="text" icon @click="openEdit(item)">
+          <v-icon size="18">
+            <PencilSquareIcon />
+          </v-icon>
+        </v-btn>
+        <v-btn size="small" variant="text" color="error" icon @click="openDelete(item)">
+          <v-icon size="18">
+            <TrashIcon />
+          </v-icon>
+        </v-btn>
       </template>
     </v-data-table>
 
@@ -32,11 +40,14 @@
               v-model="form.icon_url"
               label="Upload Icon"
               accept="image/*,image/svg+xml"
-              prepend-icon="fas fa-image"
               show-size
               clearable
               :required="!editing"
-            />
+            >
+              <template #prepend>
+                <PhotoIcon class="h-5 w-5" />
+              </template>
+            </v-file-input>
             <v-text-field v-model.number="form.order" type="number" label="Order" />
             <v-switch v-model="form.is_active" :true-value="true" :false-value="false" label="Active" />
           </v-form>
@@ -55,8 +66,10 @@
 
 <script>
 import api from '../../api';
+import { PencilSquareIcon, TrashIcon, PhotoIcon } from '@heroicons/vue/24/outline';
 
 export default {
+  components: { PencilSquareIcon, TrashIcon, PhotoIcon },
   data() {
     return {
       loading: false,
