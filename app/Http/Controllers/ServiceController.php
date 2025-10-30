@@ -41,6 +41,22 @@ class ServiceController extends Controller
     }
 
     /**
+     * get each service with it's works
+     */
+
+    public function servicePage($serviceId = null)
+    {
+        try {
+            if ($serviceId) {
+                return Service::with('work')->where('id', $serviceId)->orderBy('order')->get();
+            }
+            return Service::with('works')->orderBy('order')->get();
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'An error occurred while fetching services. ' . $e->getMessage()], 500);
+        }
+    }
+
+    /**
      * Display the specified resource.
      */
     public function show(Service $service)

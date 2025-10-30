@@ -11,6 +11,7 @@ use App\Http\Controllers\PhoneContactsController;
 use App\Http\Controllers\WhatsAppContactsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Admin\LoginController;
+use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -41,4 +42,8 @@ Route::post('/phone/{phone_contact}/record', [PhoneContactsController::class, 'r
 Route::get('/next-whatsapp-contact', [WhatsAppContactsController::class, 'nextWhatsAppNumber']);
 Route::post('/whatsapp/{whatsapp_contact}/record', [WhatsAppContactsController::class, 'recordWhatsAppNumber']);
 
+//services page
+Route::get('/service/{serviceId}', [ServiceController::class, 'servicePage']);
+//work page
+Route::get('/work/{workId}', [WorkController::class, 'workPage']);
 Route::get('/home', [PageController::class, 'home']);

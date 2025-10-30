@@ -28,6 +28,8 @@ class WorkController extends Controller
             'project_title_ar' => 'required|string',
             'project_description_ar' => 'required|string',
             'project_image' => 'required|image|mimes:jpeg,png,jpg,webp,gif|max:4096',
+            'project_images' => 'sometimes|array',
+            'project_images.*' => 'image|mimes:jpeg,png,jpg,webp,gif|max:4096',
             'project_link' => 'nullable|string',
             'service_id' => 'required|exists:services,id',
             'is_active' => 'boolean',
@@ -39,7 +41,18 @@ class WorkController extends Controller
         }
 
         $work = Work::create($validated);
-        return $work->load('service');
+
+        // Handle multiple gallery images (project_images[])
+        if ($request->hasFile('project_images')) {
+            foreach ($request->file('project_images') as $galleryImage) {
+                $galleryPath = $galleryImage->store('works', 'public');
+                $work->images()->create([
+                    'image_url' => URL::to(Storage::url($galleryPath))
+                ]);
+            }
+        }
+
+        return $work->load(['service', 'images']);
     }
 
     /**
@@ -48,6 +61,21 @@ class WorkController extends Controller
     public function show(Work $work)
     {
         return $work->load('service');
+    }
+
+    /**
+     * Get work by id and it's Images
+     */
+    public function workPage($workId = null)
+    {
+        try {
+            if ($workId) {
+                return Work::with('images')->where('id', $workId)->get();
+            }
+            return Work::with('images')->get();
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'An error occurred while fetching works. ' . $e->getMessage()], 500);
+        }
     }
 
     /**
@@ -61,6 +89,8 @@ class WorkController extends Controller
             'project_title_ar' => 'required|string',
             'project_description_ar' => 'required|string',
             'project_image' => 'nullable|image|mimes:jpeg,png,jpg,webp,gif|max:4096',
+            'project_images' => 'sometimes|array',
+            'project_images.*' => 'image|mimes:jpeg,png,jpg,webp,gif|max:4096',
             'project_link' => 'nullable|string',
             'service_id' => 'required|exists:services,id',
             'is_active' => 'boolean',
@@ -80,7 +110,17 @@ class WorkController extends Controller
 
         $work->update($validated);
 
-        return $work;
+        // Handle extra gallery uploads (append new images)
+        if ($request->hasFile('project_images')) {
+            foreach ($request->file('project_images') as $galleryImage) {
+                $galleryPath = $galleryImage->store('works', 'public');
+                $work->images()->create([
+                    'image_url' => URL::to(Storage::url($galleryPath))
+                ]);
+            }
+        }
+
+        return $work->load(['service', 'images']);
     }
 
     /**

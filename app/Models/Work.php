@@ -25,4 +25,8 @@ class Work extends Model
     {
         return $value ? url($value) : null;
     }
+    public function images()
+    {
+        return $this->hasMany(WorkImages::class, 'work_id');
+    }
 }

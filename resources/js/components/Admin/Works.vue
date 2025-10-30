@@ -51,6 +51,29 @@
                 <PhotoIcon class="h-5 w-5" />
               </template>
             </v-file-input>
+
+            <!-- Gallery Images input -->
+            <v-file-input
+              v-model="form.project_images"
+              label="Upload Gallery Images"
+              accept="image/*"
+              prepend-icon="mdi-image-multiple"
+              multiple
+              show-size
+              clearable
+            />
+
+            <!-- Thumbnails: preview selected gallery images -->
+            <div class="flex flex-wrap gap-2 my-2">
+              <!-- New selected images -->
+              <div v-for="(img, idx) in form.project_images" :key="idx" class="inline-block" v-if="img">
+                <img :src="img instanceof File ? URL.createObjectURL(img) : img" style="width:60px;height:40px;object-fit:cover;border-radius:4px;" />
+              </div>
+              <!-- Existing images from backend (editing only) -->
+              <div v-if="editing && form.images && form.images.length" v-for="(img, i) in form.images" :key="'stored'+i">
+                <img :src="img.image_url" style="width:60px;height:40px;object-fit:cover;border-radius:4px;opacity:0.6" />
+              </div>
+            </div>
             <v-text-field v-model="form.project_link" label="Project Link" />
             <v-select
               v-model="form.service_id"
@@ -102,7 +125,7 @@ export default {
       dialog: false,
       editing: false,
       currentId: null,
-      form: { project_title: '', project_title_ar: '', project_description: '', project_description_ar: '', project_image: null, project_link: '', service_id: null, is_active: true },
+      form: { project_title: '', project_title_ar: '', project_description: '', project_description_ar: '', project_image: null, project_link: '', service_id: null, is_active: true, project_images: [], images: [] },
       confirm: { show: false, item: null, loading: false },
       headers: [
         { title: 'ID', key: 'id' },
@@ -120,8 +143,24 @@ export default {
     notify(text, color = 'success') { this.snackbar = { show: true, text, color }; },
     fetch() { this.loading = true; api.get('/works').then(res => this.items = res.data).finally(() => this.loading = false); },
     fetchServices() { api.get('/services').then(res => this.services = res.data); },
-    openCreate() { this.editing = false; this.currentId = null; this.form = { project_title: '', project_title_ar: '', project_description: '', project_description_ar: '', project_image: null, project_link: '', service_id: null, is_active: true }; this.dialog = true; },
-    openEdit(item) { this.editing = true; this.currentId = item.id; this.form = { project_title: item.project_title, project_title_ar: item.project_title_ar, project_description: item.project_description, project_description_ar: item.project_description_ar, project_image: null, project_link: item.project_link, service_id: item.service_id || item.service?.id || null, is_active: item.is_active }; this.dialog = true; },
+    openCreate() { this.editing = false; this.currentId = null; this.form = { project_title: '', project_title_ar: '', project_description: '', project_description_ar: '', project_image: null, project_link: '', service_id: null, is_active: true, project_images: [], images: [] }; this.dialog = true; },
+    openEdit(item) {
+      this.editing = true;
+      this.currentId = item.id;
+      this.form = {
+        project_title: item.project_title,
+        project_title_ar: item.project_title_ar,
+        project_description: item.project_description,
+        project_description_ar: item.project_description_ar,
+        project_image: null,
+        project_link: item.project_link,
+        service_id: item.service_id || item.service?.id || null,
+        is_active: item.is_active,
+        project_images: [],
+        images: item.images || [],
+      };
+      this.dialog = true;
+    },
     save() {
       this.saving = true;
       const fd = new FormData();
@@ -134,6 +173,15 @@ export default {
       if (this.form.project_link) fd.append('project_link', this.form.project_link);
       if (this.form.service_id) fd.append('service_id', String(this.form.service_id));
       fd.append('is_active', this.form.is_active ? '1' : '0');
+
+      // Gallery image uploads
+      if (this.form.project_images && Array.isArray(this.form.project_images)) {
+         this.form.project_images.forEach((file, idx) => {
+            if (file instanceof File) {
+              fd.append('project_images[]', file);
+            }
+         });
+      }
 
       const req = this.editing
         ? (fd.append('_method', 'PUT'), api.post(`/works/${this.currentId}`, fd))
