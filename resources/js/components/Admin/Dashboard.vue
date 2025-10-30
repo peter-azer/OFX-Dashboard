@@ -17,47 +17,47 @@
       <v-list density="compact" nav>
         <v-list-item :to="{ name: 'admin.analytics' }" title="Analytics">
           <template #prepend>
-            <Squares2X2Icon class="h-5 w-5" />
+            <Squares2X2Icon class="h-5 w-5 mx-4" />
           </template>
         </v-list-item>
         <v-list-item :to="{ name: 'admin.heroes' }" title="Heroes">
           <template #prepend>
-            <StarIcon class="h-5 w-5" />
+            <StarIcon class="h-5 w-5 mx-4" />
           </template>
         </v-list-item>
         <v-list-item :to="{ name: 'admin.brands' }" title="Brands">
           <template #prepend>
-            <TagIcon class="h-5 w-5" />
+            <TagIcon class="h-5 w-5 mx-4" />
           </template>
         </v-list-item>
         <v-list-item :to="{ name: 'admin.abouts' }" title="Abouts">
           <template #prepend>
-            <InformationCircleIcon class="h-5 w-5" />
+            <InformationCircleIcon class="h-5 w-5 mx-4" />
           </template>
         </v-list-item>
         <v-list-item :to="{ name: 'admin.services' }" title="Services">
           <template #prepend>
-            <BriefcaseIcon class="h-5 w-5" />
+            <BriefcaseIcon class="h-5 w-5 mx-4" />
           </template>
         </v-list-item>
         <v-list-item :to="{ name: 'admin.works' }" title="Works">
           <template #prepend>
-            <BriefcaseIcon class="h-5 w-5" />
+            <BriefcaseIcon class="h-5 w-5 mx-4" />
           </template>
         </v-list-item>
         <v-list-item :to="{ name: 'admin.teams' }" title="Teams">
           <template #prepend>
-            <UsersIcon class="h-5 w-5" />
+            <UsersIcon class="h-5 w-5 mx-4" />
           </template>
         </v-list-item>
         <v-list-item :to="{ name: 'admin.phone-contacts' }" title="Phone Contacts">
           <template #prepend>
-            <PhoneIcon class="h-5 w-5" />
+            <PhoneIcon class="h-5 w-5 mx-4" />
           </template>
         </v-list-item>
         <v-list-item :to="{ name: 'admin.whatsapp-contacts' }" title="WhatsApp Contacts">
           <template #prepend>
-            <ChatBubbleOvalLeftIcon class="h-5 w-5" />
+            <ChatBubbleOvalLeftIcon class="h-5 w-5 mx-4" />
           </template>
         </v-list-item>
       </v-list>
