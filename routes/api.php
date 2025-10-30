@@ -10,6 +10,7 @@ use App\Http\Controllers\WorkController;
 use App\Http\Controllers\PhoneContactsController;
 use App\Http\Controllers\WhatsAppContactsController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\Admin\LoginController;
 use App\Models\Service;
 use Illuminate\Http\Request;
@@ -30,6 +31,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('teams', TeamController::class);
     Route::apiResource('phone-contacts', PhoneContactsController::class);
     Route::apiResource('whatsapp-contacts', WhatsAppContactsController::class);
+    Route::get('/admin/analytics-overview', [AnalyticsController::class, 'overview']);
 });
 
 Route::post('/admin/login', [LoginController::class, 'login']);
@@ -46,4 +48,5 @@ Route::post('/whatsapp/{whatsapp_contact}/record', [WhatsAppContactsController::
 Route::get('/service/{serviceId}', [ServiceController::class, 'servicePage']);
 //work page
 Route::get('/work/{workId}', [WorkController::class, 'workPage']);
+
 Route::get('/home', [PageController::class, 'home']);

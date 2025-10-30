@@ -15,7 +15,7 @@
       <v-list-item title="OFX Dashboard" subtitle="Content Manager" />
       <v-divider />
       <v-list density="compact" nav>
-        <v-list-item :to="{ name: 'admin.dashboard' }" title="Dashboard">
+        <v-list-item :to="{ name: 'admin.analytics' }" title="Analytics">
           <template #prepend>
             <Squares2X2Icon class="h-5 w-5" />
           </template>

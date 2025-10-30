@@ -19,6 +19,7 @@
     "dependencies": {
         "@heroicons/vue": "^2.1.5",
         "@mdi/js": "^7.4.47",
+        "chart.js": "^4.5.1",
         "sass": "^1.93.2",
         "vite-plugin-vuetify": "^2.1.2",
         "vue-router": "^4.6.3",
