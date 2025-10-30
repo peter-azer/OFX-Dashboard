@@ -67,7 +67,7 @@ export default {
                     if (token) {
                         localStorage.setItem('access_token', token);
                         this.notify('Login successful');
-                        this.$router.push({ name: 'admin.dashboard' });
+                        this.$router.push({ name: 'admin.analytics' });
                     } else {
                         this.notify('Login failed: no token received', 'error');
                     }
