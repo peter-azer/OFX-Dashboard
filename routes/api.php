@@ -31,7 +31,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('teams', TeamController::class);
     Route::apiResource('phone-contacts', PhoneContactsController::class);
     Route::apiResource('whatsapp-contacts', WhatsAppContactsController::class);
-    Route::get('/admin/analytics-overview', [AnalyticsController::class, 'overview']);
+    Route::get('analytics-overview', [AnalyticsController::class, 'overview']);
 });
 
 Route::post('/admin/login', [LoginController::class, 'login']);

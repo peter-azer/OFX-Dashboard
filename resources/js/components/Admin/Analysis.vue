@@ -38,16 +38,24 @@ export default {
     };
   },
   mounted() {
-    api.get('/admin/analytics-overview').then(res => {
+    api.get('/analytics-overview').then(res => {
       this.data = res.data;
       this.renderChart();
     });
   },
   methods: {
-    renderChart() {
+ renderChart() {
+      // Clean up any existing chart
       if (this.chartInstance) this.chartInstance.destroy();
-      const ctx = this.$refs.chart;
+
+      const ctx = this.$refs.chart?.getContext('2d');
+      if (!ctx) {
+        console.warn('Chart canvas not found');
+        return;
+      }
+
       const { labels = [], phone = [], whatsapp = [] } = this.data.chart || {};
+
       this.chartInstance = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -56,19 +64,68 @@ export default {
             {
               label: 'Phone Records',
               data: phone,
-              backgroundColor: 'rgba(37,99,235,0.5)'
+              backgroundColor: 'rgba(37,99,235,0.6)', // blue-600/60
+              borderColor: 'rgba(37,99,235,1)',
+              borderWidth: 1,
+              borderRadius: 4
             },
             {
               label: 'WhatsApp Records',
               data: whatsapp,
-              backgroundColor: 'rgba(16,185,129,0.5)'
+              backgroundColor: 'rgba(16,185,129,0.6)', // emerald-500/60
+              borderColor: 'rgba(16,185,129,1)',
+              borderWidth: 1,
+              borderRadius: 4
             }
           ]
         },
         options: {
           responsive: true,
-          plugins: { legend: { position: 'top' }},
-          scales: { x: { title: { display: true, text: 'Day' }}, y: { beginAtZero: true } }
+          maintainAspectRatio: true,
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: {
+                color: '#374151', // gray-700
+                font: { weight: '600' }
+              }
+            },
+            title: {
+              display: true,
+              text: 'Daily Contact Records',
+              color: '#111827',
+              font: { size: 18, weight: 'bold' }
+            }
+          },
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: 'Contact Name',
+                color: '#1f2937'
+              },
+              ticks: {
+                color: '#4b5563'
+              },
+              grid: {
+                color: '#e5e7eb'
+              }
+            },
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: 'Records Count',
+                color: '#1f2937'
+              },
+              ticks: {
+                color: '#4b5563'
+              },
+              grid: {
+                color: '#f3f4f6'
+              }
+            }
+          }
         }
       });
     }

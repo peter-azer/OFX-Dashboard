@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('whats_app_records', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('whats_app_contact_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('whats_app_contacts_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }

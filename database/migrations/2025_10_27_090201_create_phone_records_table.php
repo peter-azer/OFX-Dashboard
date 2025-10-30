@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('phone_records', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('phone_contact_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('phone_contacts_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }
