@@ -15,7 +15,7 @@ class ServiceController extends BaseController
     */
     public function __construct()
     {
-        $this->middleware('auth:sanctum')->except(['index', 'show']);
+        $this->middleware('auth:sanctum')->except(['index', 'show', 'servicePage']);
         $this->middleware('permission:view services')->only(['index', 'show']);
         $this->middleware('permission:create services')->only('store');
         $this->middleware('permission:edit services')->only('update');

@@ -15,7 +15,7 @@ class WorkController extends BaseController
     */
     public function __construct()
     {
-        $this->middleware('auth:sanctum')->except(['index', 'show']);
+        $this->middleware('auth:sanctum')->except(['index', 'show', 'workPage']);
         $this->middleware('permission:view works')->only(['index', 'show']);
         $this->middleware('permission:create works')->only('store');
         $this->middleware('permission:edit works')->only('update');
