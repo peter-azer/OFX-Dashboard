@@ -13,9 +13,18 @@ use App\Models\WhatsAppRecord;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
+use Illuminate\Routing\Controller as BaseController;
 
-class AnalyticsController extends Controller
+class AnalyticsController extends BaseController
 {
+    /**
+     * Create a new controller instance.
+     */
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum');
+        $this->middleware('permission:view analytics');
+    }
     public function overview(Request $request)
     {
         $total_brands = Brand::count();
@@ -23,24 +32,24 @@ class AnalyticsController extends Controller
         $total_services = Service::count();
         $total_works = Work::count();
 
-    // Get contacts and record counts
-    $phoneContactData = PhoneContacts::withCount('records')->get(['name']);
-    $whatsappContactData = WhatsAppContacts::withCount('records')->get(['name']);
+        // Get contacts and record counts
+        $phoneContactData = PhoneContacts::withCount('records')->get(['name']);
+        $whatsappContactData = WhatsAppContacts::withCount('records')->get(['name']);
 
-    // Merge all unique contact names
-    $allNames = $phoneContactData->pluck('name')
-        ->merge($whatsappContactData->pluck('name'))
-        ->unique()
-        ->values();
+        // Merge all unique contact names
+        $allNames = $phoneContactData->pluck('name')
+            ->merge($whatsappContactData->pluck('name'))
+            ->unique()
+            ->values();
 
-    // Map counts
-    $phoneCounts = $phoneContactData->mapWithKeys(fn($c) => [$c->name => $c->records_count]);
-    $whatsappCounts = $whatsappContactData->mapWithKeys(fn($c) => [$c->name => $c->records_count]);
+        // Map counts
+        $phoneCounts = $phoneContactData->mapWithKeys(fn($c) => [$c->name => $c->records_count]);
+        $whatsappCounts = $whatsappContactData->mapWithKeys(fn($c) => [$c->name => $c->records_count]);
 
-    // Build chart data arrays
-    $labels = $allNames->toArray();
-    $phoneArray = collect($labels)->map(fn($n) => $phoneCounts[$n] ?? 0)->toArray();
-    $whatsappArray = collect($labels)->map(fn($n) => $whatsappCounts[$n] ?? 0)->toArray();
+        // Build chart data arrays
+        $labels = $allNames->toArray();
+        $phoneArray = collect($labels)->map(fn($n) => $phoneCounts[$n] ?? 0)->toArray();
+        $whatsappArray = collect($labels)->map(fn($n) => $whatsappCounts[$n] ?? 0)->toArray();
         return response()->json([
             'brands' => $total_brands,
             'team' => $total_team,

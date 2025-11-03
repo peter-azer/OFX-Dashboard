@@ -7,9 +7,21 @@ use App\Http\Requests\StorePhoneContactsRequest;
 use App\Http\Requests\UpdatePhoneContactsRequest;
 use App\Models\PhoneRecord;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller as BaseController;
 
-class PhoneContactsController extends Controller
+class PhoneContactsController extends BaseController
 {
+    /**
+     * Create a new controller instance.
+    */
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum')->except(['index', 'show']);
+        $this->middleware('permission:view phone')->only(['index', 'show']);
+        $this->middleware('permission:create phone')->only('store');
+        $this->middleware('permission:edit phone')->only('update');
+        $this->middleware('permission:delete phone')->only('destroy');
+    }
     /**
      * Display a listing of the resource.
      */

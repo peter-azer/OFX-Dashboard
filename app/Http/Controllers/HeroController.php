@@ -6,9 +6,21 @@ use App\Models\Hero;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Routing\Controller as BaseController;
 
-class HeroController extends Controller
-{
+class HeroController extends BaseController
+{    
+    /**
+     * Create a new controller instance.
+    */
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum')->except(['index', 'show']);
+        $this->middleware('permission:view heroes')->only(['index', 'show']);
+        $this->middleware('permission:create heroes')->only('store');
+        $this->middleware('permission:edit heroes')->only('update');
+        $this->middleware('permission:delete heroes')->only('destroy');
+    }
     /**
      * Display a listing of the resource.
      */

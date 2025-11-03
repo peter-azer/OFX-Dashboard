@@ -6,9 +6,21 @@ use App\Models\Team;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Routing\Controller as BaseController;
 
-class TeamController extends Controller
+class TeamController extends BaseController
 {
+    /**
+     * Create a new controller instance.
+    */
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum')->except(['index', 'show']);
+        $this->middleware('permission:view teams')->only(['index', 'show']);
+        $this->middleware('permission:create teams')->only('store');
+        $this->middleware('permission:edit teams')->only('update');
+        $this->middleware('permission:delete teams')->only('destroy');
+    }
     /**
      * Display a listing of the resource.
      */

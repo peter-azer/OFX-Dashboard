@@ -6,9 +6,21 @@ use App\Models\Brand;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Routing\Controller as BaseController;
 
-class BrandController extends Controller
+class BrandController extends BaseController
 {
+    /**
+     * Create a new controller instance.
+    */
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum')->except(['index', 'show']);
+        $this->middleware('permission:view brands')->only(['index', 'show']);
+        $this->middleware('permission:create brands')->only('store');
+        $this->middleware('permission:edit brands')->only('update');
+        $this->middleware('permission:delete brands')->only('destroy');
+    }
     /**
      * Display a listing of the resource.
      */

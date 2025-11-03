@@ -14,6 +14,7 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasApiTokens, HasRoles, HasFactory, Notifiable;
 
+    protected $appends = ['all_permissions'];
     /**
      * The attributes that are mass assignable.
      *
@@ -34,6 +35,11 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+
+    public function getAllPermissionsAttribute()
+    {
+        return $this->getAllPermissions()->pluck('name');
+    }
 
     /**
      * Get the attributes that should be cast.

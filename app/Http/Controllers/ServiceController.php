@@ -6,9 +6,21 @@ use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Routing\Controller as BaseController;
 
-class ServiceController extends Controller
+class ServiceController extends BaseController
 {
+    /**
+     * Create a new controller instance.
+    */
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum')->except(['index', 'show']);
+        $this->middleware('permission:view services')->only(['index', 'show']);
+        $this->middleware('permission:create services')->only('store');
+        $this->middleware('permission:edit services')->only('update');
+        $this->middleware('permission:delete services')->only('destroy');
+    }
     /**
      * Display a listing of the resource.
      */
