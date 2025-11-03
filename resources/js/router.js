@@ -7,6 +7,7 @@ import Abouts from "./components/Admin/Abouts.vue";
 import Services from "./components/Admin/Services.vue";
 import Works from "./components/Admin/Works.vue";
 import Teams from "./components/Admin/Teams.vue";
+import Users from "./components/Admin/Users.vue";
 import PhoneContacts from "./components/Admin/PhoneContacts.vue";
 import WhatsAppContacts from "./components/Admin/WhatsAppContacts.vue";
 import Analysis from "./components/Admin/Analysis.vue";
@@ -73,6 +74,12 @@ const routes = [
                 path: "teams",
                 name: "admin.teams",
                 component: Teams,
+                meta: { requiresAuth: true },
+            },
+            {
+                path: "users",
+                name: "admin.users",
+                component: Users,
                 meta: { requiresAuth: true },
             },
             {

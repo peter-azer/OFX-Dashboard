@@ -1,17 +1,19 @@
 <?php
 
+use App\Http\Controllers\Admin\LoginController;
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\HeroController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\TeamController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\WorkController;
 use App\Http\Controllers\PhoneContactsController;
 use App\Http\Controllers\WhatsAppContactsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AnalyticsController;
-use App\Http\Controllers\Admin\LoginController;
+use App\Http\Controllers\BlogsController;
 use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -29,13 +31,15 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('services', ServiceController::class);
     Route::apiResource('works', WorkController::class);
     Route::apiResource('teams', TeamController::class);
+    Route::apiResource('users', UserController::class);
     Route::apiResource('phone-contacts', PhoneContactsController::class);
     Route::apiResource('whatsapp-contacts', WhatsAppContactsController::class);
     Route::get('analytics-overview', [AnalyticsController::class, 'overview']);
+    Route::get('roles', [UserController::class, 'roles']);
 });
 
 Route::post('/admin/login', [LoginController::class, 'login']);
-
+Route::get('/blogs', [BlogsController::class, 'index']);
 // Phone Contacts
 Route::get('/next-contact', [PhoneContactsController::class, 'nextPhoneNumber']);
 Route::post('/phone/{phone_contact}/record', [PhoneContactsController::class, 'recordPhoneNumber']);

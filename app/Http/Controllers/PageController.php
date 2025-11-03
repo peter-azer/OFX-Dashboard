@@ -8,6 +8,7 @@ use App\Models\Hero;
 use App\Models\Service;
 use App\Models\Team;
 use App\Models\Work;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class PageController extends Controller
@@ -21,6 +22,7 @@ class PageController extends Controller
             'services' => Service::all(),
             'works' => Work::all(),
             'teams' => Team::all(),
+            'users' => User::all(),
         ]);
     }
 }

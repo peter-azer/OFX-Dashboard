@@ -50,6 +50,11 @@
             <UsersIcon class="h-5 w-5 mx-4" />
           </template>
         </v-list-item>
+        <v-list-item v-if="hasPermission('view users')" :to="{ name: 'admin.users' }" title="Users">
+          <template #prepend>
+            <UsersIcon class="h-5 w-5 mx-4" />
+          </template>
+        </v-list-item>
         <v-list-item v-if="hasPermission('view phone')" :to="{ name: 'admin.phone-contacts' }" title="Phone Contacts">
           <template #prepend>
             <PhoneIcon class="h-5 w-5 mx-4" />
