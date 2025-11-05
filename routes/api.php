@@ -46,6 +46,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 Route::post('/admin/login', [LoginController::class, 'login']);
 Route::get('/blogs', [BlogsController::class, 'index']);
+Route::get('/blogs/{post}', [BlogsController::class, 'show']);
 // Phone Contacts
 Route::get('/next-contact', [PhoneContactsController::class, 'nextPhoneNumber']);
 Route::post('/phone/{phone_contact}/record', [PhoneContactsController::class, 'recordPhoneNumber']);
