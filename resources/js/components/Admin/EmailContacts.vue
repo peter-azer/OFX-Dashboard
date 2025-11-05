@@ -12,35 +12,23 @@
     <v-data-table :items="items" :headers="headers" :loading="loading">
       <template #item.services="{ item }">
         <div class="flex flex-wrap gap-1 max-w-xs">
-          <v-chip 
-            v-for="service in item.services" 
-            :key="service.id"
-            size="small"
-            class="mr-1 mb-1"
-          >
+          <v-chip v-for="service in item.services" :key="service.id" size="small" class="mr-1 mb-1">
             {{ service.service_name }}
           </v-chip>
         </div>
       </template>
-      
+
       <template #item.is_active="{ item }">
-        <v-switch 
-          :model-value="Boolean(item.is_active)" 
-          hide-details 
-          color="primary"
-          @update:modelValue="toggleStatus(item, $event)" 
-        />
+        <v-switch :model-value="Boolean(item.is_active)" hide-details color="primary"
+          @update:modelValue="toggleStatus(item, $event)" :disabled="loading" :loading="loading" class="mt-0 pt-0">
+          <template v-slot:label>
+            <span class="sr-only">Set as main email</span>
+          </template>
+        </v-switch>
       </template>
       <template #item.is_main="{ item }">
-        <v-switch 
-          :model-value="Boolean(item.is_main)"
-          hide-details
-          color="primary"
-          @update:modelValue="setAsMain(item)"
-          :disabled="loading"
-          :loading="loading"
-          class="mt-0 pt-0"
-        >
+        <v-switch :model-value="Boolean(item.is_main)" hide-details color="primary" @update:modelValue="setAsMain(item)"
+          :disabled="loading" :loading="loading" class="mt-0 pt-0">
           <template v-slot:label>
             <span class="sr-only">Set as main email</span>
           </template>
@@ -81,37 +69,14 @@
 
             <div class="mt-4">
               <label class="block text-sm font-medium text-gray-700 mb-1">Services</label>
-              <v-select
-                v-model="form.service_ids"
-                :items="services"
-                item-title="service_name"
-                item-value="id"
-                label="Select Services"
-                multiple
-                chips
-                closable-chips
-                clearable
-                :loading="loading"
-                :disabled="loading"
-                class="w-full"
-                variant="outlined"
-                density="comfortable"
-                hide-details="auto"
-              >
+              <v-select v-model="form.service_ids" :items="services" item-title="service_name" item-value="id"
+                label="Select Services" multiple chips closable-chips clearable :loading="loading" :disabled="loading"
+                class="w-full" variant="outlined" density="comfortable" hide-details="auto">
                 <template #selection="{ item, index }">
-                  <v-chip
-                    v-if="index < 2"
-                    size="small"
-                    class="mr-1"
-                    close
-                    @click:close="removeService(item.raw.id)"
-                  >
+                  <v-chip v-if="index < 2" size="small" class="mr-1" close @click:close="removeService(item.raw.id)">
                     {{ item.raw.service_name }}
                   </v-chip>
-                  <span
-                    v-else-if="index === 2"
-                    class="text-gray-500 text-xs"
-                  >
+                  <span v-else-if="index === 2" class="text-gray-500 text-xs">
                     +{{ form.service_ids.length - 2 }} more
                   </span>
                 </template>
@@ -219,20 +184,20 @@ export default {
             'X-Requested-With': 'XMLHttpRequest'
           }
         });
-        
+
         this.items = response.data.data || [];
         this.services = response.data.services || [];
-        
+
         // Find and set the main email
         const mainItem = this.items.find(item => item.is_main);
         this.mainEmail = mainItem ? mainItem.id : null;
-        
+
         // Ensure consistent state
         this.items = this.items.map(item => ({
           ...item,
           is_main: item.id === this.mainEmail ? 1 : 0
         }));
-        
+
         console.log('Fetched emails and services:', { items: this.items, services: this.services });
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -282,11 +247,11 @@ export default {
       this.saving = true;
 
       try {
-        const data = { 
+        const data = {
           email: this.form.email,
           service_ids: this.form.service_ids || []
         };
-        
+
         if (this.editing) {
           await api.put(`/emails/${this.currentId}`, data);
           this.notify('Email updated successfully');
@@ -294,7 +259,7 @@ export default {
           await api.post('/emails', data);
           this.notify('Email added successfully');
         }
-        
+
         this.dialog = false;
         await this.fetch();
       } catch (error) {
@@ -370,10 +335,10 @@ export default {
     async setAsMain(item) {
       // Don't do anything if clicking the already selected main email
       if (this.mainEmail === item.id) return;
-      
+
       const originalMainEmail = this.mainEmail;
       this.loading = true;
-      
+
       try {
         // Update UI immediately for better UX
         this.mainEmail = item.id;
@@ -384,11 +349,11 @@ export default {
 
         // Make the API call
         const response = await api.put(`/emails/${item.id}/set-main`);
-        
+
         if (!response.data.success) {
           throw new Error('Failed to update main email');
         }
-        
+
         this.notify('Main email updated successfully', 'success');
       } catch (error) {
         console.error('Error setting main email:', error);
@@ -403,7 +368,7 @@ export default {
         this.loading = false;
       }
     },
-    
+
     removeService(serviceId) {
       this.form.service_ids = this.form.service_ids.filter(id => id !== serviceId);
     }
