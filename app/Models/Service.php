@@ -9,7 +9,6 @@ use Illuminate\Notifications\Notifiable;
 
 class Service extends Model
 {
-    use Notifiable;
     protected $fillable = [
         'service_name',
         'short_description',
@@ -41,10 +40,6 @@ class Service extends Model
     public function getIconUrlAttribute($value)
     {
         return $value ? url($value) : null;
-    }
-        public function routeNotificationForMail(): string
-    {
-        return $this->email;
     }
 }
 //

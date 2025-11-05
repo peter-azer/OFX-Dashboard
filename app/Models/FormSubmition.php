@@ -9,7 +9,7 @@ use Illuminate\Notifications\Notifiable;
 class FormSubmition extends Model
 {
     /** @use HasFactory<\Database\Factories\FormSubmitionFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory;
 
     protected $fillable = [
         'full_name',
@@ -24,9 +24,5 @@ class FormSubmition extends Model
     {
         return $this->belongsToMany(Service::class, 'form_service', 'form_id', 'service_id')
                     ->withTimestamps();
-    }
-        public function routeNotificationForMail(): string
-    {
-        return $this->email;
     }
 }
