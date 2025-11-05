@@ -56,7 +56,7 @@ class FormSubmition extends Notification
             ->line('A new form submission has been received. Here are the details:')
             ->line('**Full Name:** ' . ($data['full_name'] ?? 'N/A'))
             ->line('**Email:** ' . ($data['email'] ?? 'N/A'))
-            ->line('**Phone Number:** ' . ($data['phone_number'] ?? 'N/A'))
+            ->line('**Phone Number:** ' . ($data['phone_number'] ? '[+'.$data['phone_number'].'](tel:'.preg_replace('/[^0-9+]/', '', $data['phone_number']).')' : 'N/A'))
             ->line('**Message:** ' . ($data['message'] ?? 'N/A'));
 
         // If services exist, format them as a list

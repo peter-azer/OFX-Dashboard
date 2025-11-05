@@ -84,8 +84,12 @@ class FormSubmitionController extends Controller
                 // Log the submission with minimal details
                 Log::info("New submission #{$submission->id} from {$submission->email}");
 
+                // Prepare submission data with services for notification
+                $submissionData = $submission->toArray();
+                $submissionData['services'] = $submission->services()->pluck('service_name')->toArray();
+                
                 // Send notification to each email with error handling
-                $notification = new \App\Notifications\FormSubmition($submission->toArray());
+                $notification = new \App\Notifications\FormSubmition($submissionData);
                 $failedRecipients = [];
                 
                 foreach ($emails as $email) {
@@ -105,9 +109,17 @@ class FormSubmitionController extends Controller
                     Log::info("Successfully sent notifications for submission #{$submission->id}");
                 }
 
+                // Load the submission with services and select only the service_name
+                $submissionWithServices = $submission->load(['services']);
+                
+                // Transform the services to include only the names
+                $submissionWithServices->services->transform(function($service) {
+                    return $service->service_name;
+                });
+                
                 return response()->json([
                     'message' => 'Form submitted successfully',
-                    'data' => $submission->load('services'),
+                    'data' => $submissionWithServices,
                     'notified_emails' => $emails->pluck('email')
                 ], 201);
             });
