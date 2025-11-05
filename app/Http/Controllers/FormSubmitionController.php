@@ -76,44 +76,28 @@ class FormSubmitionController extends Controller
                     ->distinct()
                     ->get();
 
-                // Log the submission for auditing
-                Log::info('New form submission', [
-                    'submission_id' => $submission->id,
-                    'email' => $submission->email,
-                    'notified_emails' => $emails->pluck('email'),
-                    'services' => $validated['services'] ?? []
-                ]);
+                // Log the submission with minimal details
+                Log::info("New submission #{$submission->id} from {$submission->email}");
 
                 // Send notification to each email with error handling
                 $notification = new \App\Notifications\FormSubmition($submission->toArray());
-                
                 $failedRecipients = [];
                 
                 foreach ($emails as $email) {
                     try {
                         $email->notify($notification);
-                        Log::info('Email sent successfully', [
-                            'to' => $email->email,
-                            'submission_id' => $submission->id
-                        ]);
                     } catch (\Exception $e) {
-                        $failedRecipients[] = [
-                            'email' => $email->email,
-                            'error' => $e->getMessage()
-                        ];
-                        Log::error('Failed to send email', [
-                            'email' => $email->email,
-                            'error' => $e->getMessage(),
-                            'trace' => $e->getTraceAsString()
-                        ]);
+                        $failedRecipients[] = $email->email;
+                        Log::error("Failed to send email to {$email->email}: " . $e->getMessage());
                     }
                 }
                 
                 if (!empty($failedRecipients)) {
-                    Log::warning('Some emails failed to send', [
-                        'failed_recipients' => $failedRecipients,
-                        'submission_id' => $submission->id
+                    Log::warning("Failed to send to some recipients for submission #{$submission->id}", [
+                        'failed_recipients' => $failedRecipients
                     ]);
+                } else {
+                    Log::info("Successfully sent notifications for submission #{$submission->id}");
                 }
 
                 return response()->json([
@@ -129,11 +113,7 @@ class FormSubmitionController extends Controller
                 'errors' => $e->errors()
             ], 422);
         } catch (\Exception $e) {
-            Log::error('Form submission failed: ' . $e->getMessage(), [
-                'exception' => $e,
-                'request' => $request->except(['password', 'password_confirmation']), // Don't log sensitive data
-                'ip' => $request->ip()
-            ]);
+            Log::error('Form submission failed: ' . $e->getMessage());
             
             return response()->json([
                 'message' => 'Failed to process your request. Please try again later.',
