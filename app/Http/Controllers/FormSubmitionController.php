@@ -68,10 +68,15 @@ class FormSubmitionController extends Controller
                         // OR service-specific emails if services are provided
                         if (!empty($validated['services'])) {
                             $query->orWhereHas('services', function($q) use ($validated) {
-                                $q->whereIn('services.id', $validated['services'])
-                                  ->where('is_active', true);
+                                $q->whereIn('services.id', $validated['services']);
                             });
                         }
+                        
+                        // OR active emails without any services
+                        $query->orWhere(function($q) {
+                            $q->where('is_active', true)
+                              ->doesntHave('services');
+                        });
                     })
                     ->distinct()
                     ->get();
