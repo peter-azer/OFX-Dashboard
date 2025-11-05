@@ -23,7 +23,6 @@ class EmailsController extends Controller
                        ->orderBy('is_main', 'desc')
                        ->orderBy('created_at', 'desc')
                        ->get();
-
         $services = Service::select('id', 'service_name')->get();
         return response()->json([
             'success' => true,

@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Notifications\Notifiable;
+
 
 class Service extends Model
 {
+    use Notifiable;
     protected $fillable = [
         'service_name',
         'short_description',
@@ -26,12 +29,22 @@ class Service extends Model
                    ->withTimestamps();
     }
 
+    public function formSubmissions()
+    {
+        return $this->belongsToMany(FormSubmition::class, 'form_service', 'service_id', 'form_id')
+                    ->withTimestamps();
+    }
+
     public function work(){
         return $this->hasMany(Work::class);
     }
     public function getIconUrlAttribute($value)
     {
         return $value ? url($value) : null;
+    }
+        public function routeNotificationForMail(): string
+    {
+        return $this->email;
     }
 }
 //

@@ -4,11 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Notifications\Notifiable;
 class Emails extends Model
 {
     /** @use HasFactory<\Database\Factories\EmailsFactory> */
-    use HasFactory;
+    use HasFactory, Notifiable;
 
     protected $fillable = [
         'email',
@@ -23,5 +23,15 @@ class Emails extends Model
     {
         return $this->belongsToMany(Service::class, 'email_service', 'email_id', 'service_id')
                    ->withTimestamps();
+    }
+
+    public function emailSubmissions()
+    {
+        return $this->hasManyThrough(FormSubmition::class, 'email_id', 'id');
+    }
+
+        public function routeNotificationForMail(): string
+    {
+        return $this->email;
     }
 }

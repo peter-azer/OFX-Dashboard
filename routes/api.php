@@ -15,6 +15,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\BlogsController;
 use App\Http\Controllers\EmailsController;
+use App\Http\Controllers\FormSubmitionController;
 use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -36,13 +37,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('phone-contacts', PhoneContactsController::class);
     Route::apiResource('whatsapp-contacts', WhatsAppContactsController::class);
     Route::apiResource('emails', EmailsController::class);
-    
+    Route::apiResource('form-submissions', FormSubmitionController::class);
     // Custom email routes
     Route::put('emails/{email}/toggle-status', [EmailsController::class, 'toggleStatus']);
     Route::put('emails/{email}/set-main', [EmailsController::class, 'setAsMain']);
     Route::get('analytics-overview', [AnalyticsController::class, 'overview']);
     Route::get('roles', [UserController::class, 'roles']);
 });
+
 
 Route::post('/admin/login', [LoginController::class, 'login']);
 Route::get('/blogs', [BlogsController::class, 'index']);
@@ -51,6 +53,8 @@ Route::get('/blogs/{post}', [BlogsController::class, 'show']);
 Route::get('/next-contact', [PhoneContactsController::class, 'nextPhoneNumber']);
 Route::post('/phone/{phone_contact}/record', [PhoneContactsController::class, 'recordPhoneNumber']);
 
+// Form Submission
+Route::post('submit-form', [FormSubmitionController::class, 'store']);
 // WhatsApp Contacts
 Route::get('/next-whatsapp-contact', [WhatsAppContactsController::class, 'nextWhatsAppNumber']);
 Route::post('/whatsapp/{whatsapp_contact}/record', [WhatsAppContactsController::class, 'recordWhatsAppNumber']);
