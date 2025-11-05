@@ -65,6 +65,11 @@
             <ChatBubbleOvalLeftIcon class="h-5 w-5 mx-4" />
           </template>
         </v-list-item>
+        <v-list-item :to="{ name: 'admin.emails' }" title="Email Contacts">
+          <template #prepend>
+            <EnvelopeIcon class="h-5 w-5 mx-4" />
+          </template>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
 
@@ -87,6 +92,7 @@ import {
   BriefcaseIcon,
   UsersIcon,
   PhoneIcon,
+  EnvelopeIcon,
   ChatBubbleOvalLeftIcon,
 } from '@heroicons/vue/24/outline';
 
@@ -100,6 +106,7 @@ export default {
     BriefcaseIcon,
     UsersIcon,
     PhoneIcon,
+    EnvelopeIcon,
     ChatBubbleOvalLeftIcon,
   },
 

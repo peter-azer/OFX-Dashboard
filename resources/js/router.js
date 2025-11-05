@@ -10,6 +10,7 @@ import Teams from "./components/Admin/Teams.vue";
 import Users from "./components/Admin/Users.vue";
 import PhoneContacts from "./components/Admin/PhoneContacts.vue";
 import WhatsAppContacts from "./components/Admin/WhatsAppContacts.vue";
+import EmailContacts from "./components/Admin/EmailContacts.vue";
 import Analysis from "./components/Admin/Analysis.vue";
 
 const routes = [
@@ -92,6 +93,12 @@ const routes = [
                 path: "whatsapp-contacts",
                 name: "admin.whatsapp-contacts",
                 component: WhatsAppContacts,
+                meta: { requiresAuth: true },
+            },
+            {
+                path: "emails",
+                name: "admin.emails",
+                component: EmailContacts,
                 meta: { requiresAuth: true },
             },
         ],

@@ -17,6 +17,15 @@ class Service extends Model
         'is_active',
     ];
 
+    /**
+     * The emails that belong to the service.
+     */
+    public function emails()
+    {
+        return $this->belongsToMany(Emails::class, 'email_service', 'service_id', 'email_id')
+                   ->withTimestamps();
+    }
+
     public function work(){
         return $this->hasMany(Work::class);
     }

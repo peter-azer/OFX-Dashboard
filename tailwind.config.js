@@ -5,8 +5,5 @@ export default {
     './resources/**/*.vue',
     './resources/**/*.js',
   ],
-  theme: {
-
-  },
   plugins: [],
 }
