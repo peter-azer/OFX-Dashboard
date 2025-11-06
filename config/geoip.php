@@ -12,7 +12,7 @@ return [
     |
     */
 
-    'log_failures' => true,
+    'log_failures' => true, // Keep this true to monitor any API issues
 
     /*
     |--------------------------------------------------------------------------
@@ -24,7 +24,7 @@ return [
     |
     */
 
-    'include_currency' => true,
+    'include_currency' => true, // This is free with IP-API
 
     /*
     |--------------------------------------------------------------------------
@@ -48,10 +48,11 @@ return [
     */
 
     'services' => [
-
         'ip-api' => [
             'class' => \Torann\GeoIP\Services\IPApi::class,
-            'secure' => true,
+            'secure' => true, // Use HTTPS for secure requests
+            'key' => null,   // Free tier doesn't require a key
+            'continent_path' => storage_path('app/continents.json'),
         ],
 
         'maxmind_database' => [
@@ -107,7 +108,7 @@ return [
     |
     */
 
-    'cache' => null,
+    'cache' => 'all', // Enable caching to respect rate limits
 
     /*
     |--------------------------------------------------------------------------
@@ -130,7 +131,7 @@ return [
     |
     */
 
-    'cache_expires' => 30,
+    'cache_expires' => 1440, // 24 hours in minutes (respects IP-API rate limits)
 
     /*
     |--------------------------------------------------------------------------
