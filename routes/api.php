@@ -16,11 +16,13 @@ use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\BlogsController;
 use App\Http\Controllers\EmailsController;
 use App\Http\Controllers\FormSubmitionController;
+use App\Http\Controllers\VisitorsController;
 use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/admin/login', [LoginController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -43,25 +45,30 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('emails/{email}/set-main', [EmailsController::class, 'setAsMain']);
     Route::get('analytics-overview', [AnalyticsController::class, 'overview']);
     Route::get('roles', [UserController::class, 'roles']);
+
+    //view geoIp analytics and trafic
+    Route::get('visits/total', [VisitorsController::class, 'total']);
+    Route::get('visits/unique-today', [VisitorsController::class, 'uniqueToday']);
+    Route::get('visits/by-country', [VisitorsController::class, 'byCountry']);
+    Route::get('visits/top-pages', [VisitorsController::class, 'topPages']);
+    Route::get('visits/per-day', [VisitorsController::class, 'visitsPerDay']);
 });
 
+    Route::get('/blogs', [BlogsController::class, 'index']);
+    Route::get('/blogs/{post}', [BlogsController::class, 'show']);
+    // Phone Contacts
+    Route::get('/next-contact', [PhoneContactsController::class, 'nextPhoneNumber']);
+    Route::post('/phone/{phone_contact}/record', [PhoneContactsController::class, 'recordPhoneNumber']);
 
-Route::post('/admin/login', [LoginController::class, 'login']);
-Route::get('/blogs', [BlogsController::class, 'index']);
-Route::get('/blogs/{post}', [BlogsController::class, 'show']);
-// Phone Contacts
-Route::get('/next-contact', [PhoneContactsController::class, 'nextPhoneNumber']);
-Route::post('/phone/{phone_contact}/record', [PhoneContactsController::class, 'recordPhoneNumber']);
+    // Form Submission
+    Route::post('submit-form', [FormSubmitionController::class, 'store']);
+    // WhatsApp Contacts
+    Route::get('/next-whatsapp-contact', [WhatsAppContactsController::class, 'nextWhatsAppNumber']);
+    Route::post('/whatsapp/{whatsapp_contact}/record', [WhatsAppContactsController::class, 'recordWhatsAppNumber']);
 
-// Form Submission
-Route::post('submit-form', [FormSubmitionController::class, 'store']);
-// WhatsApp Contacts
-Route::get('/next-whatsapp-contact', [WhatsAppContactsController::class, 'nextWhatsAppNumber']);
-Route::post('/whatsapp/{whatsapp_contact}/record', [WhatsAppContactsController::class, 'recordWhatsAppNumber']);
+    //services page
+    Route::get('/service/{serviceId}', [ServiceController::class, 'servicePage']);
+    //work page
+    Route::get('/work/{workId}', [WorkController::class, 'workPage']);
 
-//services page
-Route::get('/service/{serviceId}', [ServiceController::class, 'servicePage']);
-//work page
-Route::get('/work/{workId}', [WorkController::class, 'workPage']);
-
-Route::get('/home', [PageController::class, 'home']);
+    Route::get('/home', [PageController::class, 'home']);

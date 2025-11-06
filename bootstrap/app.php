@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use App\Http\Middleware\TrackVisitor;
 use App\Http\Middleware\CheckPermission;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -13,7 +14,14 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        $middleware->web(append: [
+            TrackVisitor::class,
+        ]);
+        $middleware->api(append: [
+        ]);
+        
         $middleware->api(prepend: [
+            TrackVisitor::class,
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
         ]);
         $middleware->alias([
