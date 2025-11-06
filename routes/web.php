@@ -8,7 +8,7 @@ use App\Http\Controllers\WelcomeController;
 // Auth::routes();
 
 // Welcome Page
-Route::get('/', [WelcomeController::class, 'index'])->name('home');
+Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 
 // Contact Form Submission
 Route::post('/contact', [WelcomeController::class, 'submitContact'])->name('contact.submit');

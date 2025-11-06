@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Cache;
 use App\Models\Visitors;
 use Torann\GeoIP\Facades\GeoIP;
 use Illuminate\Support\Str;
-use App\Jobs\RecordVisitJob; // optional queued job
 use Illuminate\Support\Facades\Log;
 
 class TrackVisitor
@@ -18,7 +17,7 @@ class TrackVisitor
         'favicon.ico', 'robots.txt',
         'sitemap.xml', 'storage/',
         'assets/', 'css/', 'js/', 'images/', 'img/',
-        'admin/',
+        'admin',
     ];
 
     // User agents / simple bot patterns to ignore or mark as bot
@@ -79,13 +78,8 @@ class TrackVisitor
                 ]);
             }
 
-            // Option A: Dispatch to queue (recommended)
-            if (class_exists(RecordVisitJob::class)) {
-                RecordVisitJob::dispatch($visitData);
-            } else {
-                // Option B: Synchronous write (fallback)
-                Visitors::create($visitData);
-            }
+            // Direct database insertion
+            Visitors::create($visitData);
         }
         
         Log::info('Tracking visit', ['ip' => $request->ip(), 'url' => $request->fullUrl()]);

@@ -54,21 +54,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('visits/per-day', [VisitorsController::class, 'visitsPerDay']);
 });
 
-    Route::get('/blogs', [BlogsController::class, 'index']);
-    Route::get('/blogs/{post}', [BlogsController::class, 'show']);
-    // Phone Contacts
-    Route::get('/next-contact', [PhoneContactsController::class, 'nextPhoneNumber']);
-    Route::post('/phone/{phone_contact}/record', [PhoneContactsController::class, 'recordPhoneNumber']);
+Route::get('/home', [PageController::class, 'home']); 
+Route::get('/blogs', [BlogsController::class, 'index']);
+Route::get('/blogs/{post}', [BlogsController::class, 'show']);
+Route::get('/next-contact', [PhoneContactsController::class, 'nextPhoneNumber']);
+Route::post('/phone/{phone_contact}/record', [PhoneContactsController::class, 'recordPhoneNumber']);
+Route::post('submit-form', [FormSubmitionController::class, 'store']);
+Route::get('/next-whatsapp-contact', [WhatsAppContactsController::class, 'nextWhatsAppNumber']);
+Route::post('/whatsapp/{whatsapp_contact}/record', [WhatsAppContactsController::class, 'recordWhatsAppNumber']);
+Route::get('/service/{serviceId}', [ServiceController::class, 'servicePage']);
+Route::get('/work/{workId}', [WorkController::class, 'workPage']);
 
-    // Form Submission
-    Route::post('submit-form', [FormSubmitionController::class, 'store']);
-    // WhatsApp Contacts
-    Route::get('/next-whatsapp-contact', [WhatsAppContactsController::class, 'nextWhatsAppNumber']);
-    Route::post('/whatsapp/{whatsapp_contact}/record', [WhatsAppContactsController::class, 'recordWhatsAppNumber']);
-
-    //services page
-    Route::get('/service/{serviceId}', [ServiceController::class, 'servicePage']);
-    //work page
-    Route::get('/work/{workId}', [WorkController::class, 'workPage']);
-
-    Route::get('/home', [PageController::class, 'home']);
