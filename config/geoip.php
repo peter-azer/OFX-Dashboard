@@ -49,6 +49,11 @@ return [
 
     'services' => [
 
+        'ip-api' => [
+            'class' => \Torann\GeoIP\Services\IPApi::class,
+            'secure' => true,
+        ],
+
         'maxmind_database' => [
             'class' => \Torann\GeoIP\Services\MaxMindDatabase::class,
             'database_path' => storage_path('app/geoip.mmdb'),
@@ -102,7 +107,7 @@ return [
     |
     */
 
-    'cache' => 'all',
+    'cache' => null,
 
     /*
     |--------------------------------------------------------------------------
@@ -114,7 +119,7 @@ return [
     |
     */
 
-    'cache_tags' => ['torann-geoip-location'],
+    'cache_tags' => null,
 
     /*
     |--------------------------------------------------------------------------
