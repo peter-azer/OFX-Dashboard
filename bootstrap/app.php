@@ -18,10 +18,10 @@ return Application::configure(basePath: dirname(__DIR__))
             TrackVisitor::class,
         ]);
         $middleware->api(append: [
+            TrackVisitor::class,
         ]);
         
         $middleware->api(prepend: [
-            TrackVisitor::class,
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
         ]);
         $middleware->alias([
