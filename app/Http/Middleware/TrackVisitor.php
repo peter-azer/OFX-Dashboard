@@ -18,7 +18,7 @@ class TrackVisitor
         'favicon.ico', 'robots.txt',
         'sitemap.xml', 'storage/',
         'assets/', 'css/', 'js/', 'images/', 'img/',
-        'admin/*',
+        'admin/',
     ];
 
     // User agents / simple bot patterns to ignore or mark as bot
