@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('services', function (Blueprint $table) {
-            $table->string('slug')->unique()->after('service_name');
+            $table->string('slug')->unique()->nullable()->after('service_name');
         });
         Schema::table('works', function (Blueprint $table) {
-            $table->string('slug')->unique()->after('project_title');
+            $table->string('slug')->unique()->nullable()->after('project_title');
         });
     }
 

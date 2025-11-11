@@ -64,4 +64,3 @@ Route::get('/next-whatsapp-contact', [WhatsAppContactsController::class, 'nextWh
 Route::post('/whatsapp/{whatsapp_contact}/record', [WhatsAppContactsController::class, 'recordWhatsAppNumber']);
 Route::get('/service/{serviceId}', [ServiceController::class, 'servicePage']);
 Route::get('/work/{workId}', [WorkController::class, 'workPage']);
-
