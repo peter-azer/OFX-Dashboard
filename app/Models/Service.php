@@ -5,12 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Notifications\Notifiable;
-
+use Illuminate\Support\Str;
+use Spatie\Sluggable\HasSlug;
+use Spatie\Sluggable\SlugOptions;
 
 class Service extends Model
 {
+    use HasSlug;
     protected $fillable = [
         'service_name',
+        'slug',
         'short_description',
         'service_name_ar',
         'short_description_ar',
@@ -18,6 +22,13 @@ class Service extends Model
         'order',
         'is_active',
     ];
+
+    public function getSlugOptions() : SlugOptions
+    {
+        return SlugOptions::create()
+            ->generateSlugsFrom('service_name')
+            ->saveSlugsTo('slug');
+    }
 
     /**
      * The emails that belong to the service.

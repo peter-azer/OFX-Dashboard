@@ -56,11 +56,11 @@ class ServiceController extends BaseController
      * get each service with it's works
      */
 
-    public function servicePage($serviceId = null)
+    public function servicePage($slug = null)
     {
         try {
-            if ($serviceId) {
-                return Service::with('work')->where('id', $serviceId)->orderBy('order')->get();
+            if ($slug) {
+                return Service::with('work')->where('slug', $slug)->orderBy('order')->get();
             }
             return Service::with('works')->orderBy('order')->get();
         } catch (\Exception $e) {
