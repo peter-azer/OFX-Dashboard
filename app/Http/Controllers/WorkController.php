@@ -78,11 +78,11 @@ class WorkController extends BaseController
     /**
      * Get work by id and it's Images
      */
-    public function workPage($workId = null)
+    public function workPage($slug = null)
     {
         try {
-            if ($workId) {
-                return Work::with('images')->where('id', $workId)->get();
+            if ($slug) {
+                return Work::with('images')->where('slug', $slug)->get();
             }
             return Work::with('images')->get();
         } catch (\Exception $e) {
