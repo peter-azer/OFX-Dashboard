@@ -62,5 +62,5 @@ Route::post('/phone/{phone_contact}/record', [PhoneContactsController::class, 'r
 Route::post('submit-form', [FormSubmitionController::class, 'store']);
 Route::get('/next-whatsapp-contact', [WhatsAppContactsController::class, 'nextWhatsAppNumber']);
 Route::post('/whatsapp/{whatsapp_contact}/record', [WhatsAppContactsController::class, 'recordWhatsAppNumber']);
-Route::get('/service/{serviceId}', [ServiceController::class, 'servicePage']);
-Route::get('/work/{workId}', [WorkController::class, 'workPage']);
+Route::get('/service/{slug}', [ServiceController::class, 'servicePage']);
+Route::get('/work/{slug}', [WorkController::class, 'workPage']);
