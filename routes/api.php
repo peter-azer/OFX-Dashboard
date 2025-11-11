@@ -67,8 +67,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/whatsapp/{whatsapp_contact}/record', [WhatsAppContactsController::class, 'recordWhatsAppNumber']);
 
     //services page
-    Route::get('/service/{serviceId}', [ServiceController::class, 'servicePage']);
+    Route::get('/service/{slug}', [ServiceController::class, 'servicePage']);
     //work page
-    Route::get('/work/{workId}', [WorkController::class, 'workPage']);
+    Route::get('/work/{slug}', [WorkController::class, 'workPage']);
 
     Route::get('/home', [PageController::class, 'home']);
