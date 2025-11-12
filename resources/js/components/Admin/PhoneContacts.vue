@@ -31,6 +31,15 @@
           <v-form @submit.prevent="save">
             <v-text-field v-model="form.name" label="Name" required />
             <v-text-field v-model="form.phone" label="Phone" required />
+            <v-text-field 
+              v-model.number="form.counter" 
+              type="number" 
+              min="1" 
+              label="Max Consecutive Calls" 
+              hint="Number of times this contact will be called consecutively" 
+              persistent-hint 
+              required 
+            />
           </v-form>
         </v-card-text>
         <v-card-actions>
@@ -71,12 +80,13 @@ export default {
       dialog: false,
       editing: false,
       currentId: null,
-      form: { name: '', phone: '' },
+      form: { name: '', phone: '', counter: 1 },
       confirm: { show: false, item: null, loading: false },
       headers: [
         { title: 'ID', key: 'id' },
         { title: 'Name', key: 'name' },
         { title: 'Phone', key: 'phone' },
+        { title: 'Max Consecutive Calls', key: 'counter' },
         { title: 'Actions', key: 'actions', sortable: false },
       ],
       snackbar: { show: false, text: '', color: 'success' },
@@ -86,11 +96,24 @@ export default {
   methods: {
     notify(text, color = 'success') { this.snackbar = { show: true, text, color }; },
     fetch() { this.loading = true; api.get('/phone-contacts').then(res => this.items = res.data).finally(() => this.loading = false); },
-    openCreate() { this.editing = false; this.currentId = null; this.form = { name: '', phone: '' }; this.dialog = true; },
-    openEdit(item) { this.editing = true; this.currentId = item.id; this.form = { name: item.name, phone: item.phone }; this.dialog = true; },
+    openCreate() { this.editing = false; this.currentId = null; this.form = { name: '', phone: '', counter: 1 }; this.dialog = true; },
+    openEdit(item) { 
+      this.editing = true; 
+      this.currentId = item.id; 
+      this.form = { 
+        name: item.name, 
+        phone: item.phone, 
+        counter: item.counter || 1 
+      }; 
+      this.dialog = true; 
+    },
     save() {
       this.saving = true;
-      const payload = { name: this.form.name, phone: this.form.phone };
+      const payload = { 
+        name: this.form.name, 
+        phone: this.form.phone, 
+        counter: parseInt(this.form.counter) || 1 
+      };
       const req = this.editing
         ? api.put(`/phone-contacts/${this.currentId}`, payload)
         : api.post('/phone-contacts', payload);

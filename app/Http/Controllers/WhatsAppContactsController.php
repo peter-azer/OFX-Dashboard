@@ -37,24 +37,64 @@ class WhatsAppContactsController extends BaseController
     {
         $lastRecord = WhatsAppRecord::latest('id')->first();
 
-        if ($lastRecord && $lastRecord->whats_app_contacts_id) {
+        if ($lastRecord) {
+            // Get the last contact that was called with its counter
+            $lastContact = WhatsAppContacts::find($lastRecord->whats_app_contacts_id);
+            
+            if ($lastContact) {
+                // Get the max consecutive calls from the contact's counter
+                $maxCallsForContact = (int)($lastContact->counter ?? 1);
+                
+                // Get the number of consecutive calls for the last contact
+                $consecutiveCalls = WhatsAppRecord::where('whats_app_contacts_id', $lastContact->id)
+                    ->orderBy('id', 'desc')
+                    ->take($maxCallsForContact)
+                    ->count();
+
+                // If we haven't reached the max calls for this contact, return the same contact
+                if ($consecutiveCalls < $maxCallsForContact) {
+                    return $this->formatWhatsAppResponse($lastContact);
+                }
+            }
+            
+            // If we get here, we need to move to the next contact
             $nextContact = WhatsAppContacts::where('id', '>', $lastRecord->whats_app_contacts_id)
+                ->whereNotNull('counter')
+                ->where('counter', '>', 0)
                 ->orderBy('id')
                 ->first();
+                
+            // If no next contact, wrap around to the first valid contact
             if (!$nextContact) {
-                $nextContact = WhatsAppContacts::orderBy('id')->first();
+                $nextContact = WhatsAppContacts::whereNotNull('counter')
+                    ->where('counter', '>', 0)
+                    ->orderBy('id')
+                    ->first();
             }
         } else {
-            $nextContact = WhatsAppContacts::orderBy('id')->first();
+            // No records yet, get the first valid contact
+            $nextContact = WhatsAppContacts::whereNotNull('counter')
+                ->where('counter', '>', 0)
+                ->orderBy('id')
+                ->first();
         }
 
         if (!$nextContact) {
             return response()->json(['message' => 'No contacts found'], 404);
         }
 
+        return $this->formatWhatsAppResponse($nextContact);
+    }
+    
+    /**
+     * Format the response for next WhatsApp number
+     */
+    private function formatWhatsAppResponse(WhatsAppContacts $contact)
+    {
         return response()->json([
-            'next_whatsapp_number' => $nextContact->phone,
-            'contact_id' => $nextContact->id,
+            'next_whatsapp_number' => $contact->phone,
+            'contact_id' => $contact->id,
+            'counter' => $contact->counter ?? 0,
         ]);
     }
 
@@ -88,6 +128,7 @@ class WhatsAppContactsController extends BaseController
         $validated = $request->validate([
             'name' => 'required|string',
             'phone' => 'required|string',
+            'counter' => 'nullable|numeric',
         ]);
 
         return WhatsAppContacts::create($validated);
@@ -117,6 +158,7 @@ class WhatsAppContactsController extends BaseController
         $validated = $request->validate([
             'name' => 'required|string',
             'phone' => 'required|string',
+            'counter' => 'nullable|numeric',
         ]);
 
         $whatsapp_contact->update($validated);
