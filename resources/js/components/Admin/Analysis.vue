@@ -76,8 +76,7 @@
       </div>
       <div class="bg-white rounded-lg shadow p-6">
         <h3 class="text-lg font-medium text-gray-900 mb-4">Activity Over Time</h3>
-        <LineChart v-if="periodChartData.labels && periodChartData.labels.length" 
-                  :data="periodChartData" :options="periodChartOptions" />
+        <LineChart v-if="chartData.labels.length" :data="chartData" :options="chartOptions" />
         <div v-else class="text-gray-500 text-center py-8">
           No activity data available for the selected period
         </div>

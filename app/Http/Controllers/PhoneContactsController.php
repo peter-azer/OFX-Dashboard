@@ -16,7 +16,7 @@ class PhoneContactsController extends BaseController
     */
     public function __construct()
     {
-        $this->middleware('auth:sanctum')->except(['index', 'show', 'nextPhoneNumber', 'recordPhoneNumber']);
+        $this->middleware('auth:sanctum')->except(['index', 'show','records', 'nextPhoneNumber', 'recordPhoneNumber']);
         $this->middleware('permission:view phone')->only(['index','records', 'show']);
         $this->middleware('permission:create phone')->only('store');
         $this->middleware('permission:edit phone')->only('update');
