@@ -17,7 +17,7 @@ class WhatsAppContactsController extends BaseController
     public function __construct()
     {
         $this->middleware('auth:sanctum')->except(['index', 'show', 'nextWhatsAppNumber', 'recordWhatsAppNumber']);
-        $this->middleware('permission:view whatsapp')->only(['index', 'show']);
+        $this->middleware('permission:view whatsapp')->only(['index', 'show','records']);
         $this->middleware('permission:create whatsapp')->only('store');
         $this->middleware('permission:edit whatsapp')->only('update');
         $this->middleware('permission:delete whatsapp')->only('destroy');
@@ -174,5 +174,13 @@ class WhatsAppContactsController extends BaseController
         $whatsapp_contact->delete();
 
         return response()->noContent();
+    }
+    
+    /**
+     * Get all whatsapp records
+     */
+    public function records()
+    {
+        return WhatsAppRecord::with('whatsAppContact')->get();
     }
 }

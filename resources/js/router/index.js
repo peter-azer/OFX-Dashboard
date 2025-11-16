@@ -24,6 +24,7 @@ const routes = [
                 component: Users,
                 meta: { requiresAuth: true, permission: 'view users' }
             },
+
         ]
     },
 ];

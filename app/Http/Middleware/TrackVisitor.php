@@ -17,7 +17,29 @@ class TrackVisitor
         'favicon.ico', 'robots.txt',
         'sitemap.xml', 'storage/',
         'assets/', 'css/', 'js/', 'images/', 'img/',
-        'admin',
+        'admin/', 'sanctum/', 'broadcasting/', 'horizon/'
+    ];
+    
+    // API routes that should be tracked (public routes from api.php)
+    protected $trackedApiRoutes = [
+        'api/home',
+        'api/blogs',
+        'api/next-contact',
+        'api/phone/',
+        'api/submit-form',
+        'api/next-whatsapp-contact',
+        'api/whatsapp/',
+        'api/service/',
+        'api/work/'
+    ];
+    
+    // API route patterns that should be tracked (for dynamic routes like /blogs/{post})
+    protected $trackedApiPatterns = [
+        'api/blogs/*',
+        'api/phone/*/record',
+        'api/whatsapp/*/record',
+        'api/service/*',
+        'api/work/*'
     ];
 
     // User agents / simple bot patterns to ignore or mark as bot
@@ -48,15 +70,55 @@ class TrackVisitor
             $ua = $request->userAgent() ?? '';
             $isBot = $this->isBot($ua);
 
-            // GeoIP caching per IP (24 hours)
-            $geoKey = "geoip:{$ip}";
-            $location = Cache::remember($geoKey, 86400, function () use ($ip) {
+            // Initialize location data with null values
+            $locationData = [
+                'country' => null,
+                'region' => null,
+                'city' => null,
+                'latitude' => null,
+                'longitude' => null,
+            ];
+
+            // Skip local/private IPs
+            if (!in_array($ip, ['127.0.0.1', '::1']) && !filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+                $geoKey = "geoip:{$ip}";
+                
                 try {
-                    return GeoIP::getLocation($ip);
+                    // Get location with error handling and validation
+                    $location = Cache::remember($geoKey, 86400, function () use ($ip) {
+                        try {
+                            $location = GeoIP::getLocation($ip);
+                            
+                            // Validate location data
+                            if ($location && $location->default === false) {
+                                return $location;
+                            }
+                            return null;
+                        } catch (\Throwable $e) {
+                            Log::warning('GeoIP lookup failed', [
+                                'ip' => $ip,
+                                'error' => $e->getMessage()
+                            ]);
+                            return null;
+                        }
+                    });
+
+                    if ($location) {
+                        $locationData = [
+                            'country' => !empty($location->country) ? $location->country : null,
+                            'region' => !empty($location->region) ? $location->region : null,
+                            'city' => !empty($location->city) ? $location->city : null,
+                            'latitude' => !empty($location->lat) ? $location->lat : null,
+                            'longitude' => !empty($location->lon) ? $location->lon : null,
+                        ];
+                    }
                 } catch (\Throwable $e) {
-                    return null;
+                    Log::error('GeoIP processing error', [
+                        'ip' => $ip,
+                        'error' => $e->getMessage()
+                    ]);
                 }
-            });
+            }
 
             $visitData = [
                 'ip_address' => $ip,
@@ -68,15 +130,8 @@ class TrackVisitor
                 'is_bot' => $isBot,
             ];
 
-            if ($location) {
-                $visitData = array_merge($visitData, [
-                    'country' => $location->country ?: null,
-                    'region' => $location->region ?: null,
-                    'city' => $location->city ?: null,
-                    'latitude' => $location->lat ?: null,
-                    'longitude' => $location->lon ?: null,
-                ]);
-            }
+            // Merge location data
+            $visitData = array_merge($visitData, $locationData);
 
             // Direct database insertion
             Visitors::create($visitData);
@@ -88,15 +143,15 @@ class TrackVisitor
 
     protected function shouldTrack(Request $request): bool
     {
-        // Only track GET
-        if (!$request->isMethod('GET')) {
+        // Track both GET and POST requests
+        if (!in_array($request->method(), ['GET', 'POST'])) {
             return false;
         }
 
         $path = $request->path();
 
-        // Ignore AJAX/XHR requests (optionally)
-        if ($request->ajax() || $request->wantsJson()) {
+        // Don't track API routes that are not part of your main application
+        if (str_starts_with($path, 'api/') && !$this->shouldTrackApiRoute($path)) {
             return false;
         }
 
@@ -110,6 +165,25 @@ class TrackVisitor
         return true;
     }
 
+    protected function shouldTrackApiRoute(string $path): bool
+    {
+        // Check exact matches or route prefixes
+        foreach ($this->trackedApiRoutes as $route) {
+            if ($path === $route || str_starts_with($path, $route)) {
+                return true;
+            }
+        }
+        
+        // Check route patterns (for dynamic routes)
+        foreach ($this->trackedApiPatterns as $pattern) {
+            if (fnmatch($pattern, $path)) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
     protected function isBot(string $ua): bool
     {
         $uaLower = strtolower($ua);

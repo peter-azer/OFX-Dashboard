@@ -12,6 +12,9 @@ import PhoneContacts from "./components/Admin/PhoneContacts.vue";
 import WhatsAppContacts from "./components/Admin/WhatsAppContacts.vue";
 import EmailContacts from "./components/Admin/EmailContacts.vue";
 import Analysis from "./components/Admin/Analysis.vue";
+import FormSubmissions from "./components/Admin/FormSubmissions.vue";
+import PhoneRecords from "./components/Admin/PhoneRecords.vue";
+import WhatsAppRecords from "./components/Admin/WhatsAppRecords.vue";
 
 const routes = [
     {
@@ -100,6 +103,24 @@ const routes = [
                 name: "admin.emails",
                 component: EmailContacts,
                 meta: { requiresAuth: true },
+            },
+            {
+                path: 'form-submissions',
+                name: 'FormSubmissions',
+                component: FormSubmissions,
+                meta: { requiresAuth: true}
+            },
+            {
+                path: 'phone-records',
+                name: 'PhoneRecords',
+                component: PhoneRecords,
+                meta: { requiresAuth: true }
+            },
+            {
+                path: 'whatsapp-records',
+                name: 'WhatsAppRecords',
+                component: WhatsAppRecords,
+                meta: { requiresAuth: true }
             },
         ],
     },

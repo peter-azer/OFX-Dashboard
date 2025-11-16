@@ -6,6 +6,7 @@ use App\Models\FormSubmition;
 use App\Models\Emails;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class FormSubmitionController extends Controller
 {
@@ -14,7 +15,7 @@ class FormSubmitionController extends Controller
      */
     public function index()
     {
-        $submissions = FormSubmition::with('services')->latest()->get();
+        $submissions = FormSubmition::with('services')->get();
         return response()->json($submissions);
     }
 
@@ -45,7 +46,7 @@ class FormSubmitionController extends Controller
             ]);
 
             // Start database transaction for data consistency
-            return \DB::transaction(function () use ($validated) {
+            return DB::transaction(function () use ($validated) {
                 // Create submission
                 $submission = FormSubmition::create([
                     'full_name' => $validated['full_name'],

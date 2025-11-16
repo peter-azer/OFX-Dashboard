@@ -15,7 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->web(append: [
-            // Web middleware group
+            TrackVisitor::class,
         ]);
         $middleware->api(append: [
             TrackVisitor::class,

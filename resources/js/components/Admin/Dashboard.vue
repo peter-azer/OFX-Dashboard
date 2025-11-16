@@ -60,12 +60,27 @@
             <PhoneIcon class="h-5 w-5 mx-4" />
           </template>
         </v-list-item>
+        <v-list-item :to="{ name: 'PhoneRecords' }" title="Phone Records">
+          <template #prepend>
+            <PhoneIcon class="h-5 w-5 mx-4" />
+          </template>
+        </v-list-item>
         <v-list-item v-if="hasPermission('view whatsapp')" :to="{ name: 'admin.whatsapp-contacts' }" title="WhatsApp Contacts">
           <template #prepend>
             <ChatBubbleOvalLeftIcon class="h-5 w-5 mx-4" />
           </template>
         </v-list-item>
+        <v-list-item :to="{ name: 'WhatsAppRecords' }" title="WhatsApp Records">
+          <template #prepend>
+            <ChatBubbleOvalLeftIcon class="h-5 w-5 mx-4" />
+          </template>
+        </v-list-item>
         <v-list-item :to="{ name: 'admin.emails' }" title="Email Contacts">
+          <template #prepend>
+            <EnvelopeIcon class="h-5 w-5 mx-4" />
+          </template>
+        </v-list-item>
+        <v-list-item :to="{ name: 'FormSubmissions' }" title="Form Submissions">
           <template #prepend>
             <EnvelopeIcon class="h-5 w-5 mx-4" />
           </template>
@@ -94,6 +109,7 @@ import {
   PhoneIcon,
   EnvelopeIcon,
   ChatBubbleOvalLeftIcon,
+  DocumentTextIcon,
 } from '@heroicons/vue/24/outline';
 
 export default {

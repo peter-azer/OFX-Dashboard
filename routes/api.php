@@ -37,7 +37,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('teams', TeamController::class);
     Route::apiResource('users', UserController::class);
     Route::apiResource('phone-contacts', PhoneContactsController::class);
+    Route::get('phone-records', [PhoneContactsController::class, 'records']);
     Route::apiResource('whatsapp-contacts', WhatsAppContactsController::class);
+    Route::get('whatsapp-records', [WhatsAppContactsController::class, 'records']);
     Route::apiResource('emails', EmailsController::class);
     Route::apiResource('form-submissions', FormSubmitionController::class);
     // Custom email routes
