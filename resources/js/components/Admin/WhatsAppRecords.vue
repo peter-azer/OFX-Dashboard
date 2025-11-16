@@ -133,14 +133,28 @@ export default {
     async fetchData() {
       try {
         this.loading = true;
-        // Fetch records with contacts already loaded via the relationship
-        const recordsRes = await axios.get('/api/whatsapp-records');
+        // Get the authentication token from localStorage
+        const token = localStorage.getItem('auth_token') || '';
         
-        // The API already includes the contact data, so we don't need a separate request
+        // Fetch records with authentication header
+        const recordsRes = await axios.get('/api/whatsapp-records', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        });
+        
         this.records = recordsRes.data;
       } catch (error) {
         console.error('Error fetching data:', error);
-        this.$toast.error('Failed to load WhatsApp records');
+        if (error.response && error.response.status === 401) {
+          // Handle unauthorized error - redirect to login or show login modal
+          this.$toast.error('Session expired. Please login again.');
+          this.$inertia.visit('/login');
+        } else {
+          this.$toast.error('Failed to load WhatsApp records');
+        }
       } finally {
         this.loading = false;
       }

@@ -130,17 +130,33 @@ export default {
     async fetchData() {
       try {
         this.loading = true;
-        // Fetch records and contacts in parallel
+        // Get the authentication token from localStorage
+        const token = localStorage.getItem('auth_token') || '';
+        
+        // Common headers for all requests
+        const headers = {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        };
+        
+        // Fetch records and contacts in parallel with authentication
         const [recordsRes, contactsRes] = await Promise.all([
-          axios.get('/api/phone-records'),
-          axios.get('/api/phone-contacts')
+          axios.get('/api/phone-records', { headers }),
+          axios.get('/api/phone-contacts', { headers })
         ]);
         
         this.records = recordsRes.data;
         this.contacts = contactsRes.data;
       } catch (error) {
         console.error('Error fetching data:', error);
-        this.$toast.error('Failed to load phone records');
+        if (error.response && error.response.status === 401) {
+          // Handle unauthorized error - redirect to login or show login modal
+          this.$toast.error('Session expired. Please login again.');
+          this.$inertia.visit('/login');
+        } else {
+          this.$toast.error('Failed to load phone records');
+        }
       } finally {
         this.loading = false;
       }
@@ -168,12 +184,24 @@ export default {
       if (!this.itemToDelete) return;
       
       try {
-        await axios.delete(`/api/phone-records/${this.itemToDelete}`);
+        const token = localStorage.getItem('auth_token') || '';
+        await axios.delete(`/api/phone-records/${this.itemToDelete}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        });
         this.records = this.records.filter(item => item.id !== this.itemToDelete);
         this.$toast.success('Record deleted successfully');
       } catch (error) {
         console.error('Error deleting record:', error);
-        this.$toast.error('Failed to delete record');
+        if (error.response && error.response.status === 401) {
+          this.$toast.error('Session expired. Please login again.');
+          this.$inertia.visit('/login');
+        } else {
+          this.$toast.error('Failed to delete record');
+        }
       } finally {
         this.deleteDialog = false;
         this.itemToDelete = null;
