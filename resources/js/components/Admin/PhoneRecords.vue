@@ -3,38 +3,19 @@
     <v-card-title>
       Phone Records
       <v-spacer></v-spacer>
-      <v-text-field
-        v-model="search"
-        append-icon="mdi-magnify"
-        label="Search"
-        single-line
-        hide-details
-        class="mb-4"
-      ></v-text-field>
+      <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details
+        class="mb-4"></v-text-field>
     </v-card-title>
-    <v-data-table
-      :headers="headers"
-      :items="recordsWithContactInfo"
-      :search="search"
-      :loading="loading"
-      :items-per-page="20"
-      class="elevation-1"
-    >
+    <v-data-table :headers="headers" :items="recordsWithContactInfo" :search="search" :loading="loading"
+      :items-per-page="20" class="elevation-1">
       <template v-slot:item.created_at="{ item }">
         {{ formatDate(item.created_at) }}
       </template>
       <template v-slot:item.actions="{ item }">
-        <v-icon
-          small
-          class="mr-2"
-          @click="viewItem(item)"
-        >
+        <v-icon small class="mr-2" @click="viewItem(item)">
           mdi-eye
         </v-icon>
-        <v-icon
-          small
-          @click="deleteItem(item)"
-        >
+        <v-icon small @click="deleteItem(item)">
           mdi-delete
         </v-icon>
       </template>
@@ -115,12 +96,15 @@ export default {
   },
   computed: {
     recordsWithContactInfo() {
-      return this.records.map(record => ({
-        ...record,
-        contact_name: this.getContactName(record.phone_contacts_id),
-        contact_phone: this.getContactPhone(record.phone_contacts_id),
-        contact: this.getContact(record.phone_contacts_id)
-      }));
+      return this.records.map(record => {
+        const contact = record.phone_contact || {};
+        return {
+          ...record,
+          contact_name: contact.name || 'Unknown',
+          contact_phone: contact.phone || 'N/A',
+          contact: contact
+        };
+      });
     }
   },
   created() {
@@ -132,22 +116,17 @@ export default {
         this.loading = true;
         // Get the authentication token from localStorage
         const token = localStorage.getItem('auth_token') || '';
-        
-        // Common headers for all requests
-        const headers = {
-          'Authorization': `Bearer ${token}`,
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        };
-        
-        // Fetch records and contacts in parallel with authentication
-        const [recordsRes, contactsRes] = await Promise.all([
-          axios.get('/api/phone-records', { headers }),
-          axios.get('/api/phone-contacts', { headers })
-        ]);
-        
+
+        // Fetch records with authentication header
+        const recordsRes = await axios.get('/api/phone-records', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        });
+
         this.records = recordsRes.data;
-        this.contacts = contactsRes.data;
       } catch (error) {
         console.error('Error fetching data:', error);
         if (error.response && error.response.status === 401) {
@@ -161,17 +140,6 @@ export default {
         this.loading = false;
       }
     },
-    getContact(contactId) {
-      return this.contacts.find(c => c.id === contactId) || null;
-    },
-    getContactName(contactId) {
-      const contact = this.getContact(contactId);
-      return contact ? contact.name : 'Unknown';
-    },
-    getContactPhone(contactId) {
-      const contact = this.getContact(contactId);
-      return contact ? contact.phone : 'N/A';
-    },
     viewItem(item) {
       this.selectedItem = { ...item };
       this.dialog = true;
@@ -182,7 +150,7 @@ export default {
     },
     async confirmDelete() {
       if (!this.itemToDelete) return;
-      
+
       try {
         const token = localStorage.getItem('auth_token') || '';
         await axios.delete(`/api/phone-records/${this.itemToDelete}`, {
@@ -209,9 +177,9 @@ export default {
     },
     formatDate(dateString) {
       if (!dateString) return '';
-      const options = { 
-        year: 'numeric', 
-        month: 'short', 
+      const options = {
+        year: 'numeric',
+        month: 'short',
         day: 'numeric',
         hour: '2-digit',
         minute: '2-digit',

@@ -3,38 +3,19 @@
     <v-card-title>
       WhatsApp Records
       <v-spacer></v-spacer>
-      <v-text-field
-        v-model="search"
-        append-icon="mdi-magnify"
-        label="Search"
-        single-line
-        hide-details
-        class="mb-4"
-      ></v-text-field>
+      <v-text-field v-model="search" append-icon="mdi-magnify" label="Search" single-line hide-details
+        class="mb-4"></v-text-field>
     </v-card-title>
-    <v-data-table
-      :headers="headers"
-      :items="recordsWithContactInfo"
-      :search="search"
-      :loading="loading"
-      :items-per-page="20"
-      class="elevation-1"
-    >
+    <v-data-table :headers="headers" :items="recordsWithContactInfo" :search="search" :loading="loading"
+      :items-per-page="20" class="elevation-1">
       <template v-slot:item.created_at="{ item }">
         {{ formatDate(item.created_at) }}
       </template>
       <template v-slot:item.actions="{ item }">
-        <v-icon
-          small
-          class="mr-2"
-          @click="viewItem(item)"
-        >
+        <v-icon small class="mr-2" @click="viewItem(item)">
           mdi-eye
         </v-icon>
-        <v-icon
-          small
-          @click="deleteItem(item)"
-        >
+        <v-icon small @click="deleteItem(item)">
           mdi-delete
         </v-icon>
       </template>
@@ -135,7 +116,7 @@ export default {
         this.loading = true;
         // Get the authentication token from localStorage
         const token = localStorage.getItem('auth_token') || '';
-        
+
         // Fetch records with authentication header
         const recordsRes = await axios.get('/api/whatsapp-records', {
           headers: {
@@ -144,7 +125,7 @@ export default {
             'Content-Type': 'application/json'
           }
         });
-        
+
         this.records = recordsRes.data;
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -169,14 +150,26 @@ export default {
     },
     async confirmDelete() {
       if (!this.itemToDelete) return;
-      
+
       try {
-        await axios.delete(`/api/whatsapp-records/${this.itemToDelete}`);
+        const token = localStorage.getItem('auth_token') || '';
+        await axios.delete(`/api/whatsapp-records/${this.itemToDelete}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        });
         this.records = this.records.filter(item => item.id !== this.itemToDelete);
         this.$toast.success('Record deleted successfully');
       } catch (error) {
         console.error('Error deleting record:', error);
-        this.$toast.error('Failed to delete record');
+        if (error.response && error.response.status === 401) {
+          this.$toast.error('Session expired. Please login again.');
+          this.$inertia.visit('/login');
+        } else {
+          this.$toast.error('Failed to delete record');
+        }
       } finally {
         this.deleteDialog = false;
         this.itemToDelete = null;
@@ -184,9 +177,9 @@ export default {
     },
     formatDate(dateString) {
       if (!dateString) return '';
-      const options = { 
-        year: 'numeric', 
-        month: 'short', 
+      const options = {
+        year: 'numeric',
+        month: 'short',
         day: 'numeric',
         hour: '2-digit',
         minute: '2-digit',
