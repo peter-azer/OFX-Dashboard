@@ -181,6 +181,8 @@ class WhatsAppContactsController extends BaseController
      */
     public function showWhatsAppRecords()
     {
-        return WhatsAppRecord::with('whatsAppContact')->get();
+        return WhatsAppRecord::with('whatsAppContact')
+        ->orderBy('created_at', 'desc')
+        ->get();
     }
 }

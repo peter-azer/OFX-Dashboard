@@ -117,7 +117,9 @@ class PhoneContactsController extends BaseController
       */
       public function showPhoneRecords()
       {
-          return PhoneRecord::with('phoneContact')->get();
+          return PhoneRecord::with('phoneContact')
+          ->orderBy('created_at', 'desc')
+          ->get();
       }
 
     /**
