@@ -76,7 +76,8 @@
       </div>
       <div class="bg-white rounded-lg shadow p-6">
         <h3 class="text-lg font-medium text-gray-900 mb-4">Activity Over Time</h3>
-        <LineChart v-if="chartData.labels.length" :data="chartData" :options="chartOptions" />
+        <LineChart v-if="periodChartData.labels && periodChartData.labels.length" 
+                  :data="periodChartData" :options="periodChartOptions" />
         <div v-else class="text-gray-500 text-center py-8">
           No activity data available for the selected period
         </div>
@@ -127,7 +128,8 @@ export default {
     const periodData = ref({
       labels: [],
       phone: [],
-      whatsapp: []
+      whatsapp: [],
+      form_submission: {}
     });
 
 
@@ -161,27 +163,43 @@ export default {
       }
     };
 
-    const periodChartData = computed(() => ({
-      labels: periodData.value.labels,
-      datasets: [
-        {
-          label: 'Phone',
-          data: periodData.value.phone,
-          borderColor: '#4F46E5',
-          backgroundColor: 'rgba(79, 70, 229, 0.1)',
-          tension: 0.3,
-          fill: true
-        },
-        {
-          label: 'WhatsApp',
-          data: periodData.value.whatsapp,
-          borderColor: '#10B981',
-          backgroundColor: 'rgba(16, 185, 129, 0.1)',
-          tension: 0.3,
-          fill: true
+    const periodChartData = computed(() => {
+      const datasets = [];
+      
+      // Add form submission datasets for each service
+      if (periodData.value.form_submission && Object.keys(periodData.value.form_submission).length > 0) {
+        const colors = [
+          { border: '#F59E0B', background: 'rgba(245, 158, 11, 0.1)' },
+          { border: '#EF4444', background: 'rgba(239, 68, 68, 0.1)' },
+          { border: '#8B5CF6', background: 'rgba(139, 92, 246, 0.1)' },
+          { border: '#EC4899', background: 'rgba(236, 72, 153, 0.1)' },
+          { border: '#06B6D4', background: 'rgba(6, 182, 212, 0.1)' },
+          { border: '#14B8A6', background: 'rgba(20, 184, 166, 0.1)' },
+          { border: '#6366F1', background: 'rgba(99, 102, 241, 0.1)' },
+          { border: '#D946EF', background: 'rgba(217, 70, 239, 0.1)' }
+        ];
+        let colorIndex = 0;
+        
+        for (const [serviceName, data] of Object.entries(periodData.value.form_submission)) {
+          const colorPair = colors[colorIndex % colors.length];
+          datasets.push({
+            label: `Form Submission - ${serviceName}`,
+            data: data,
+            borderColor: colorPair.border,
+            backgroundColor: colorPair.background,
+            tension: 0.3,
+            fill: true,
+            borderWidth: 2
+          });
+          colorIndex++;
         }
-      ]
-    }));
+      }
+      
+      return {
+        labels: periodData.value.labels,
+        datasets: datasets
+      };
+    });
 
     const fetchData = async () => {
       try {
