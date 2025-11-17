@@ -114,19 +114,9 @@ export default {
     async fetchData() {
       try {
         this.loading = true;
-        // Get the authentication token from localStorage
-        const token = localStorage.getItem('auth_token') || '';
+        const response = await axios.get('/api/whatsapp-records');
 
-        // Fetch records with authentication header
-        const recordsRes = await axios.get('/api/whatsapp-records', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          }
-        });
-
-        this.records = recordsRes.data;
+        this.records = response.data;
       } catch (error) {
         console.error('Error fetching data:', error);
         if (error.response && error.response.status === 401) {
