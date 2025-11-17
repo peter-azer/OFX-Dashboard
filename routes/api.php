@@ -37,8 +37,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('teams', TeamController::class);
     Route::apiResource('users', UserController::class);
     Route::apiResource('phone-contacts', PhoneContactsController::class);
+    Route::get('phone-records', [PhoneContactsController::class, 'showPhoneRecords']);
     Route::apiResource('whatsapp-contacts', WhatsAppContactsController::class);
+    Route::get('whatsapp-records', [WhatsAppContactsController::class, 'showWhatsAppRecords']);
     Route::apiResource('emails', EmailsController::class);
+    Route::apiResource('form-submissions', FormSubmitionController::class);
     // Custom email routes
     Route::put('emails/{email}/toggle-status', [EmailsController::class, 'toggleStatus']);
     Route::put('emails/{email}/set-main', [EmailsController::class, 'setAsMain']);
@@ -53,9 +56,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('visits/per-day', [VisitorsController::class, 'visitsPerDay']);
 });
 
-Route::get('phone-records', [PhoneContactsController::class, 'showPhoneRecords']);
-Route::get('whatsapp-records', [WhatsAppContactsController::class, 'showWhatsAppRecords']);
-Route::apiResource('form-submissions', FormSubmitionController::class);
 Route::get('/home', [PageController::class, 'home']); 
 Route::get('/blogs', [BlogsController::class, 'index']);
 Route::get('/blogs/{post}', [BlogsController::class, 'show']);
