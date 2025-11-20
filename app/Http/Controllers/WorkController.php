@@ -6,13 +6,14 @@ use App\Models\Work;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Routing\Controller as BaseController;
 
 class WorkController extends BaseController
 {
     /**
      * Create a new controller instance.
-    */
+     */
     public function __construct()
     {
         $this->middleware('auth:sanctum')->except(['index', 'show', 'workPage']);
@@ -24,9 +25,38 @@ class WorkController extends BaseController
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return Work::with('service')->get();
+        $sortBy = $request->query('sort_by', 'order');
+        $sortDir = strtolower($request->query('sort_dir', 'asc')) === 'desc' ? 'desc' : 'asc';
+
+        $allowed = ['id', 'project_title', 'is_active', 'service_name', 'order'];
+        if (!in_array($sortBy, $allowed, true)) {
+            $sortBy = 'order';
+        }
+
+        // Fallback if 'order' column does not exist yet (migration pending)
+        $orderColumnExists = Schema::hasColumn('works', 'order');
+        if ($sortBy === 'order' && !$orderColumnExists) {
+            $sortBy = 'id';
+        }
+
+        $query = Work::query()->with('service');
+
+        if ($sortBy === 'service_name') {
+            $query->leftJoin('services', 'services.id', '=', 'works.service_id')
+                ->orderBy('services.service_name', $sortDir)
+                ->select('works.*');
+        } else {
+            $query->orderBy('works.' . $sortBy, $sortDir);
+        }
+
+        // Always add a secondary sort for stable ordering
+        if ($sortBy !== 'id') {
+            $query->orderBy('works.id', 'asc');
+        }
+
+        return $query->get();
     }
 
     /**
@@ -45,6 +75,7 @@ class WorkController extends BaseController
             'project_link' => 'nullable|string',
             'service_id' => 'required|exists:services,id',
             'is_active' => 'boolean',
+            'order' => 'nullable|integer',
         ]);
 
         if ($request->hasFile('project_image')) {
@@ -81,10 +112,15 @@ class WorkController extends BaseController
     public function workPage($slug = null)
     {
         try {
+            $orderColumnExists = Schema::hasColumn('works', 'order');
             if ($slug) {
-                return Work::with('images')->where('slug', $slug)->get();
+                $q = Work::with('images')->where('slug', $slug);
+                $q = $orderColumnExists ? $q->orderBy('order')->orderBy('id') : $q->orderBy('id');
+                return $q->get();
             }
-            return Work::with('images')->get();
+            $q = Work::with('images');
+            $q = $orderColumnExists ? $q->orderBy('order')->orderBy('id') : $q->orderBy('id');
+            return $q->get();
         } catch (\Exception $e) {
             return response()->json(['error' => 'An error occurred while fetching works. ' . $e->getMessage()], 500);
         }
@@ -106,6 +142,7 @@ class WorkController extends BaseController
             'project_link' => 'nullable|string',
             'service_id' => 'required|exists:services,id',
             'is_active' => 'boolean',
+            'order' => 'nullable|integer',
         ]);
 
         if ($request->hasFile('project_image')) {

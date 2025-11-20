@@ -16,11 +16,11 @@ class WelcomeController extends Controller
 {
     public function index()
     {
-            $hero = Hero::all();
-            $brands = Brand::all();
+            $hero = Hero::orderBy('order','asc')->get();
+            $brands = Brand::orderBy('order','asc')->get();
             $about = About::all();
-            $services = Service::all();
-            $works = Work::all();
+            $services = Service::orderBy('order','asc')->get();
+            $works = Work::orderBy('order','desc')->get();
             $team = Team::all();
             $phoneContacts = PhoneContacts::all();
             $whatsappContacts = WhatsAppContacts::all();

@@ -16,11 +16,11 @@ class PageController extends Controller
     public function home()
     {
         return response()->json([
-            'hero' => Hero::all(),
-            'brands' => Brand::all(),
+            'hero' => Hero::orderBy('order','asc')->get(),
+            'brands' => Brand::orderBy('order','asc')->get(),
             'about' => About::all(),
-            'services' => Service::all(),
-            'works' => Work::all(),
+            'services' => Service::orderBy('order','asc')->get(),
+            'works' => Work::orderBy('order','asc')->get(),
             'teams' => Team::all(),
             'users' => User::all(),
         ]);

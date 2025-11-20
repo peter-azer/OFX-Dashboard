@@ -9,11 +9,11 @@
       </v-col>
     </v-row>
 
-    <v-data-table :items="items" :headers="headers" :loading="loading">
+    <v-data-table :items="items" :headers="headers" :loading="loading" v-model:sort-by="sortBy">
       <template #item.project_image="{ item }">
         <v-img :src="item.project_image" width="60" height="40" cover></v-img>
       </template>
-      <template #item.service="{ item }">
+      <template #item.service_name="{ item }">
         {{ item.service?.service_name || '-' }}
       </template>
       <template #item.actions="{ item }">
@@ -39,50 +39,35 @@
             <v-text-field v-model="form.project_title_ar" label="Project Title (AR)" required />
             <v-textarea v-model="form.project_description" label="Project Description" required rows="4" />
             <v-textarea v-model="form.project_description_ar" label="Project Description (AR)" required rows="4" />
-            <v-file-input
-              v-model="form.project_image"
-              label="Upload Project Image"
-              accept="image/*"
-              show-size
-              clearable
-              :required="!editing"
-            >
+            <v-file-input v-model="form.project_image" label="Upload Project Image" accept="image/*" show-size clearable
+              :required="!editing">
               <template #prepend>
                 <PhotoIcon class="h-5 w-5" />
               </template>
             </v-file-input>
 
             <!-- Gallery Images input -->
-            <v-file-input
-              v-model="form.project_images"
-              label="Upload Gallery Images"
-              accept="image/*"
-              prepend-icon="mdi-image-multiple"
-              multiple
-              show-size
-              clearable
-            />
+            <v-file-input v-model="form.project_images" label="Upload Gallery Images" accept="image/*"
+              prepend-icon="mdi-image-multiple" multiple show-size clearable />
 
             <!-- Thumbnails: preview selected gallery images -->
             <div class="flex flex-wrap gap-2 my-2">
               <!-- New selected images -->
               <div v-for="(img, idx) in form.project_images" :key="idx" class="inline-block" v-if="img">
-                <img :src="img instanceof File ? URL.createObjectURL(img) : img" style="width:60px;height:40px;object-fit:cover;border-radius:4px;" />
+                <img :src="img instanceof File ? URL.createObjectURL(img) : img"
+                  style="width:60px;height:40px;object-fit:cover;border-radius:4px;" />
               </div>
               <!-- Existing images from backend (editing only) -->
-              <div v-if="editing && form.images && form.images.length" v-for="(img, i) in form.images" :key="'stored'+i">
-                <img :src="img.image_url" style="width:60px;height:40px;object-fit:cover;border-radius:4px;opacity:0.6" />
+              <div v-if="editing && form.images && form.images.length" v-for="(img, i) in form.images"
+                :key="'stored' + i">
+                <img :src="img.image_url"
+                  style="width:60px;height:40px;object-fit:cover;border-radius:4px;opacity:0.6" />
               </div>
             </div>
             <v-text-field v-model="form.project_link" label="Project Link" />
-            <v-select
-              v-model="form.service_id"
-              :items="services"
-              item-title="service_name"
-              item-value="id"
-              label="Service"
-              required
-            />
+            <v-text-field v-model.number="form.order" type="number" label="Order" />
+            <v-select v-model="form.service_id" :items="services" item-title="service_name" item-value="id"
+              label="Service" required />
             <v-switch v-model="form.is_active" :true-value="true" :false-value="false" label="Active" />
           </v-form>
         </v-card-text>
@@ -125,25 +110,50 @@ export default {
       dialog: false,
       editing: false,
       currentId: null,
-      form: { project_title: '', project_title_ar: '', project_description: '', project_description_ar: '', project_image: null, project_link: '', service_id: null, is_active: true, project_images: [], images: [] },
+      form: { project_title: '', project_title_ar: '', project_description: '', project_description_ar: '', project_image: null, project_link: '', order: 0, service_id: null, is_active: true, project_images: [], images: [] },
       confirm: { show: false, item: null, loading: false },
       headers: [
         { title: 'ID', key: 'id' },
         { title: 'Title', key: 'project_title' },
-        { title: 'Image', key: 'project_image' },
-        { title: 'Service', key: 'service' },
+        { title: 'Image', key: 'project_image', sortable: false },
+        { title: 'Order', key: 'order' },
+        { title: 'Service', key: 'service_name' },
         { title: 'Active', key: 'is_active' },
         { title: 'Actions', key: 'actions', sortable: false },
       ],
       snackbar: { show: false, text: '', color: 'success' },
+      sortBy: [{ key: 'order', order: 'asc' }],
     };
   },
   created() { this.fetch(); this.fetchServices(); },
+  watch: {
+    sortBy: {
+      handler() {
+        this.fetch();
+      },
+      deep: true,
+    }
+  },
   methods: {
     notify(text, color = 'success') { this.snackbar = { show: true, text, color }; },
-    fetch() { this.loading = true; api.get('/works').then(res => this.items = res.data).finally(() => this.loading = false); },
+    fetch() {
+      this.loading = true;
+      const firstSort = Array.isArray(this.sortBy) && this.sortBy.length ? this.sortBy[0] : { key: 'id', order: 'asc' };
+      const params = { sort_by: firstSort.key, sort_dir: firstSort.order };
+      api.get('/works', { params })
+        .then(res => {
+          // Ensure service_name exists for table binding
+          this.items = Array.isArray(res.data)
+            ? res.data.map(it => ({
+              ...it,
+              service_name: it?.service?.service_name || ''
+            }))
+            : [];
+        })
+        .finally(() => (this.loading = false));
+    },
     fetchServices() { api.get('/services').then(res => this.services = res.data); },
-    openCreate() { this.editing = false; this.currentId = null; this.form = { project_title: '', project_title_ar: '', project_description: '', project_description_ar: '', project_image: null, project_link: '', service_id: null, is_active: true, project_images: [], images: [] }; this.dialog = true; },
+    openCreate() { this.editing = false; this.currentId = null; this.form = { project_title: '', project_title_ar: '', project_description: '', project_description_ar: '', project_image: null, project_link: '', order: 0, service_id: null, is_active: true, project_images: [], images: [] }; this.dialog = true; },
     openEdit(item) {
       this.editing = true;
       this.currentId = item.id;
@@ -154,6 +164,7 @@ export default {
         project_description_ar: item.project_description_ar,
         project_image: null,
         project_link: item.project_link,
+        order: typeof item.order === 'number' ? item.order : 0,
         service_id: item.service_id || item.service?.id || null,
         is_active: item.is_active,
         project_images: [],
@@ -171,24 +182,25 @@ export default {
       const imgFile = Array.isArray(this.form.project_image) ? this.form.project_image[0] : this.form.project_image;
       if (imgFile instanceof File) fd.append('project_image', imgFile);
       if (this.form.project_link) fd.append('project_link', this.form.project_link);
+      if (this.form.order !== null && this.form.order !== undefined) fd.append('order', String(this.form.order));
       if (this.form.service_id) fd.append('service_id', String(this.form.service_id));
       fd.append('is_active', this.form.is_active ? '1' : '0');
 
       // Gallery image uploads
       if (this.form.project_images && Array.isArray(this.form.project_images)) {
-         this.form.project_images.forEach((file, idx) => {
-            if (file instanceof File) {
-              fd.append('project_images[]', file);
-            }
-         });
+        this.form.project_images.forEach((file, idx) => {
+          if (file instanceof File) {
+            fd.append('project_images[]', file);
+          }
+        });
       }
 
       const req = this.editing
         ? (fd.append('_method', 'PUT'), api.post(`/works/${this.currentId}`, fd))
         : api.post('/works', fd);
       req.then(() => { this.dialog = false; this.fetch(); this.notify('Saved successfully'); })
-         .catch(() => this.notify('Save failed', 'error'))
-         .finally(() => this.saving = false);
+        .catch(() => this.notify('Save failed', 'error'))
+        .finally(() => this.saving = false);
     },
     openDelete(item) { this.confirm = { show: true, item, loading: false }; },
     confirmDelete() {

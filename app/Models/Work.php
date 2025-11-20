@@ -20,16 +20,18 @@ class Work extends Model
         'project_image',
         'project_link',
         'is_active',
+        'order',
     ];
 
-    public function getSlugOptions() : SlugOptions
+    public function getSlugOptions(): SlugOptions
     {
         return SlugOptions::create()
             ->generateSlugsFrom('project_title')
             ->saveSlugsTo('slug');
     }
-    
-    public function service(){
+
+    public function service()
+    {
         return $this->belongsTo(Service::class);
     }
     public function getProjectImageAttribute($value)
