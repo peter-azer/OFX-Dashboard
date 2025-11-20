@@ -12,7 +12,7 @@ class ServiceController extends BaseController
 {
     /**
      * Create a new controller instance.
-    */
+     */
     public function __construct()
     {
         $this->middleware('auth:sanctum')->except(['index', 'show', 'servicePage']);
@@ -62,7 +62,11 @@ class ServiceController extends BaseController
             if ($slug) {
                 return Service::with('work')->where('slug', $slug)->orderBy('order')->get();
             }
-            return Service::with('works')->orderBy('order')->get();
+            return Service::with(['work' => function ($q) {
+                $q->orderBy('order', 'asc');
+            }])
+                ->orderBy('order', 'asc')
+                ->get();
         } catch (\Exception $e) {
             return response()->json(['error' => 'An error occurred while fetching services. ' . $e->getMessage()], 500);
         }
