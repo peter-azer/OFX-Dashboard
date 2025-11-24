@@ -72,8 +72,7 @@
 </template>
 
 <script>
-import axios from 'axios';
-
+import api from '../../api';
 export default {
   name: 'PhoneRecords',
   data() {
@@ -115,7 +114,7 @@ export default {
       try {
         
         this.loading = true;
-        const response = await axios.get('/api/phone-records');
+        const response = await api.get('/phone-records');
 
         this.records = response.data;
       } catch (error) {
@@ -144,7 +143,7 @@ export default {
 
       try {
         const token = localStorage.getItem('auth_token') || '';
-        await axios.delete(`/api/phone-records/${this.itemToDelete}`, {
+        await api.delete(`/api/phone-records/${this.itemToDelete}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Accept': 'application/json',

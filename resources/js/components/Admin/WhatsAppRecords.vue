@@ -72,7 +72,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import api from '../../api';
 
 export default {
   name: 'WhatsAppRecords',
@@ -112,9 +112,9 @@ export default {
   },
   methods: {
     async fetchData() {
+      this.loading = true;
       try {
-        this.loading = true;
-        const response = await axios.get('/api/whatsapp-records');
+        const response = await api.get('/whatsapp-records');
 
         this.records = response.data;
       } catch (error) {
@@ -143,7 +143,7 @@ export default {
 
       try {
         const token = localStorage.getItem('auth_token') || '';
-        await axios.delete(`/api/whatsapp-records/${this.itemToDelete}`, {
+        await api.delete(`/api/whatsapp-records/${this.itemToDelete}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Accept': 'application/json',

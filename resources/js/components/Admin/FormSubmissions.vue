@@ -101,8 +101,7 @@
 </template>
 
 <script>
-import axios from 'axios';
-
+import api from '../../api';
 export default {
     name: 'FormSubmissions',
     data() {
@@ -131,7 +130,7 @@ export default {
         async fetchSubmissions() {
             try {
                 this.loading = true;
-                const response = await axios.get('/api/form-submissions');
+                const response = await api.get('/form-submissions');
                 this.submissions = response.data;
             } catch (error) {
                 console.error('Error fetching submissions:', error);
@@ -152,7 +151,7 @@ export default {
             if (!this.itemToDelete) return;
 
             try {
-                await axios.delete(`/api/form-submissions/${this.itemToDelete}`);
+                await api.delete(`/api/form-submissions/${this.itemToDelete}`);
                 this.submissions = this.submissions.filter(item => item.id !== this.itemToDelete);
                 this.$toast.success('Submission deleted successfully');
             } catch (error) {
