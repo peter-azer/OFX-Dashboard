@@ -141,17 +141,12 @@ export default {
             const ed = window.tinymce?.get('post-content-editor');
             if (ed) ed.remove();
         },
-        async fetch() {
+        fetch() {
             this.loading = true;
-            try {
-                const res = await api.get('/posts');
-                this.items = Array.isArray(res.data) ? res.data : (res.data?.data || []);
-            } catch (e) {
-                this.notify('Failed to load posts', 'error');
-                console.error(e);
-            } finally {
-                this.loading = false;
-            }
+            api.get('/posts')
+                .then(res => { this.items = Array.isArray(res.data) ? res.data : (res.data?.data || []); })
+                .catch(() => this.notify('Failed to load posts', 'error'))
+                .finally(() => { this.loading = false; });
         },
         openCreate() {
             this.editing = false; this.currentId = null; this.form = { title: '', excerpt: '', content: '', image_url: null, status: 'publish' }; this.dialog = true;
@@ -159,42 +154,55 @@ export default {
         openEdit(item) {
             this.editing = true; this.currentId = item.id; this.form = { title: item.title, excerpt: item.excerpt, content: item.content, image_url: null, status: item.status || 'publish' }; this.dialog = true;
         },
-        async save() {
+        save() {
             this.saving = true;
-            try {
-                const ed = window.tinymce?.get('post-content-editor');
-                if (ed) this.form.content = ed.getContent();
+            const ed = window.tinymce?.get('post-content-editor');
+            if (ed) this.form.content = ed.getContent();
+            const imgFile = Array.isArray(this.form.image_url) ? this.form.image_url[0] : this.form.image_url;
+
+            let req;
+            if (this.editing) {
+                if (imgFile instanceof File) {
+                    const fd = new FormData();
+                    fd.append('title', this.form.title);
+                    fd.append('excerpt', this.form.excerpt || '');
+                    fd.append('content', this.form.content);
+                    fd.append('status', this.form.status || 'publish');
+                    fd.append('image_url', imgFile);
+                    fd.append('_method', 'PUT');
+                    req = api.post(`/posts/${this.currentId}`, fd);
+                } else {
+                    // No file selected: send JSON like other components
+                    const payload = {
+                        title: this.form.title,
+                        excerpt: this.form.excerpt || '',
+                        content: this.form.content,
+                        status: this.form.status || 'publish',
+                    };
+                    req = api.put(`/posts/${this.currentId}`, payload);
+                }
+            } else {
                 const fd = new FormData();
                 fd.append('title', this.form.title);
                 fd.append('excerpt', this.form.excerpt || '');
                 fd.append('content', this.form.content);
                 fd.append('status', this.form.status || 'publish');
-                const imgFile = Array.isArray(this.form.image_url) ? this.form.image_url[0] : this.form.image_url;
                 if (imgFile instanceof File) fd.append('image_url', imgFile);
-
-                const req = this.editing
-                    ? (fd.append('_method', 'PUT'), api.post(`/posts/${this.currentId}`, fd))
-                    : api.post('/posts', fd);
-                await req;
-                this.dialog = false; this.fetch(); this.notify('Saved successfully');
-            } catch (e) {
-                this.notify('Save failed', 'error');
-            } finally {
-                this.saving = false;
+                req = api.post('/posts', fd);
             }
+
+            req.then(() => { this.dialog = false; this.fetch(); this.notify('Saved successfully'); })
+                .catch(() => this.notify('Save failed', 'error'))
+                .finally(() => { this.saving = false; });
         },
         openDelete(item) { this.confirm = { show: true, item, loading: false }; },
-        async confirmDelete() {
+        confirmDelete() {
             if (!this.confirm.item) return;
             this.confirm.loading = true;
-            try {
-                await api.delete(`/posts/${this.confirm.item.id}`);
-                this.notify('Deleted'); this.confirm.show = false; this.fetch();
-            } catch (e) {
-                this.notify('Delete failed', 'error');
-            } finally {
-                this.confirm.loading = false; this.confirm.item = null;
-            }M
+            api.delete(`/posts/${this.confirm.item.id}`)
+                .then(() => { this.fetch(); this.notify('Deleted'); this.confirm.show = false; })
+                .catch(() => this.notify('Delete failed', 'error'))
+                .finally(() => { this.confirm.loading = false; this.confirm.item = null; });
         },
     },
 };
@@ -211,12 +219,11 @@ export default {
 .tox-menu,
 .tox-menu__content,
 .tox-swatches {
-  z-index: 99999 !important;
+    z-index: 99999 !important;
 }
 
 /* Editor inside dialog but under the Vuetify app bar etc. */
 .tox-editor-container {
-  z-index: 1000 !important;
+    z-index: 1000 !important;
 }
-
 </style>
