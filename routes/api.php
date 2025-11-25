@@ -14,6 +14,7 @@ use App\Http\Controllers\WhatsAppContactsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\BlogsController;
+use App\Http\Controllers\PostsController;
 use App\Http\Controllers\EmailsController;
 use App\Http\Controllers\FormSubmitionController;
 use App\Http\Controllers\VisitorsController;
@@ -47,7 +48,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('emails/{email}/set-main', [EmailsController::class, 'setAsMain']);
     Route::get('analytics-overview', [AnalyticsController::class, 'overview']);
     Route::get('roles', [UserController::class, 'roles']);
-    
+
     //view geoIp analytics and trafic
     Route::get('visits/total', [VisitorsController::class, 'total']);
     Route::get('visits/unique-today', [VisitorsController::class, 'uniqueToday']);
@@ -56,9 +57,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('visits/per-day', [VisitorsController::class, 'visitsPerDay']);
 });
 
-Route::get('/home', [PageController::class, 'home']); 
+Route::get('/home', [PageController::class, 'home']);
 Route::get('/blogs', [BlogsController::class, 'index']);
 Route::get('/blogs/{post}', [BlogsController::class, 'show']);
+// Posts API (public index/show; create/update/delete guarded by controller middleware)
+Route::apiResource('posts', PostsController::class);
 Route::get('/next-contact', [PhoneContactsController::class, 'nextPhoneNumber']);
 Route::post('/phone/{phone_contact}/record', [PhoneContactsController::class, 'recordPhoneNumber']);
 Route::post('submit-form', [FormSubmitionController::class, 'store']);
@@ -66,4 +69,3 @@ Route::get('/next-whatsapp-contact', [WhatsAppContactsController::class, 'nextWh
 Route::post('/whatsapp/{whatsapp_contact}/record', [WhatsAppContactsController::class, 'recordWhatsAppNumber']);
 Route::get('/service/{slug}', [ServiceController::class, 'servicePage']);
 Route::get('/work/{slug}', [WorkController::class, 'workPage']);
-

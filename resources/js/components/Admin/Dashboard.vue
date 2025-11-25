@@ -65,7 +65,8 @@
             <PhoneIcon class="h-5 w-5 mx-4" />
           </template>
         </v-list-item>
-        <v-list-item v-if="hasPermission('view whatsapp')" :to="{ name: 'admin.whatsapp-contacts' }" title="WhatsApp Contacts">
+        <v-list-item v-if="hasPermission('view whatsapp')" :to="{ name: 'admin.whatsapp-contacts' }"
+          title="WhatsApp Contacts">
           <template #prepend>
             <ChatBubbleOvalLeftIcon class="h-5 w-5 mx-4" />
           </template>
@@ -83,6 +84,11 @@
         <v-list-item :to="{ name: 'FormSubmissions' }" title="Form Submissions">
           <template #prepend>
             <EnvelopeIcon class="h-5 w-5 mx-4" />
+          </template>
+        </v-list-item>
+        <v-list-item v-if="hasPermission('view posts')" :to="{ name: 'admin.posts' }" title="Posts">
+          <template #prepend>
+            <DocumentTextIcon class="h-5 w-5 mx-4" />
           </template>
         </v-list-item>
       </v-list>
@@ -124,6 +130,7 @@ export default {
     PhoneIcon,
     EnvelopeIcon,
     ChatBubbleOvalLeftIcon,
+    DocumentTextIcon,
   },
 
   data() {
@@ -182,7 +189,7 @@ export default {
       this.loading = true;
       api
         .post('/logout')
-        .catch(() => {})
+        .catch(() => { })
         .finally(() => {
           localStorage.removeItem('access_token');
           localStorage.removeItem('permissions');
@@ -193,5 +200,3 @@ export default {
   },
 };
 </script>
-
-

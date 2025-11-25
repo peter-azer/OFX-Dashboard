@@ -8,6 +8,7 @@ import Services from "./components/Admin/Services.vue";
 import Works from "./components/Admin/Works.vue";
 import Teams from "./components/Admin/Teams.vue";
 import Users from "./components/Admin/Users.vue";
+import Posts from "./components/Admin/Posts.vue";
 import PhoneContacts from "./components/Admin/PhoneContacts.vue";
 import WhatsAppContacts from "./components/Admin/WhatsAppContacts.vue";
 import EmailContacts from "./components/Admin/EmailContacts.vue";
@@ -87,6 +88,12 @@ const routes = [
                 meta: { requiresAuth: true },
             },
             {
+                path: "posts",
+                name: "admin.posts",
+                component: Posts,
+                meta: { requiresAuth: true },
+            },
+            {
                 path: "phone-contacts",
                 name: "admin.phone-contacts",
                 component: PhoneContacts,
@@ -105,22 +112,22 @@ const routes = [
                 meta: { requiresAuth: true },
             },
             {
-                path: 'form-submissions',
-                name: 'FormSubmissions',
+                path: "form-submissions",
+                name: "FormSubmissions",
                 component: FormSubmissions,
-                meta: { requiresAuth: true}
+                meta: { requiresAuth: true },
             },
             {
-                path: 'phone-records',
-                name: 'PhoneRecords',
+                path: "phone-records",
+                name: "PhoneRecords",
                 component: PhoneRecords,
-                meta: { requiresAuth: true }
+                meta: { requiresAuth: true },
             },
             {
-                path: 'whatsapp-records',
-                name: 'WhatsAppRecords',
+                path: "whatsapp-records",
+                name: "WhatsAppRecords",
                 component: WhatsAppRecords,
-                meta: { requiresAuth: true }
+                meta: { requiresAuth: true },
             },
         ],
     },

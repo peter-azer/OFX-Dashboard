@@ -13,6 +13,7 @@ class Posts extends Model
         'slug',
         'content',
         'excerpt',
+        'image_url',
         'status',
         'author_id',
     ];
