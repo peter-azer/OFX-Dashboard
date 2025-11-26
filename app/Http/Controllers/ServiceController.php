@@ -63,9 +63,9 @@ class ServiceController extends BaseController
                 return Service::with('work')->where('slug', $slug)->orderBy('order')->get();
             }
             return Service::with(['work' => function ($q) {
-                $q->orderBy('order', 'asc');
+                $q->orderBy('order', 'desc');
             }])
-                ->orderBy('order', 'asc')
+                ->orderBy('order', 'desc')
                 ->get();
         } catch (\Exception $e) {
             return response()->json(['error' => 'An error occurred while fetching services. ' . $e->getMessage()], 500);
