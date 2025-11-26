@@ -16,6 +16,7 @@ import Analysis from "./components/Admin/Analysis.vue";
 import FormSubmissions from "./components/Admin/FormSubmissions.vue";
 import PhoneRecords from "./components/Admin/PhoneRecords.vue";
 import WhatsAppRecords from "./components/Admin/WhatsAppRecords.vue";
+import Offers from "./components/Admin/Offers.vue";
 
 const routes = [
     {
@@ -91,6 +92,12 @@ const routes = [
                 path: "posts",
                 name: "admin.posts",
                 component: Posts,
+                meta: { requiresAuth: true },
+            },
+            {
+                path: "offers",
+                name: "admin.offers",
+                component: Offers,
                 meta: { requiresAuth: true },
             },
             {

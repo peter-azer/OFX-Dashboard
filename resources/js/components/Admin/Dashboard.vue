@@ -30,6 +30,11 @@
             <TagIcon class="h-5 w-5 mx-4" />
           </template>
         </v-list-item>
+        <v-list-item v-if="hasPermission('view heroes')" :to="{ name: 'admin.offers' }" title="Offers">
+          <template #prepend>
+            <TagIcon class="h-5 w-5 mx-4" />
+          </template>
+        </v-list-item>
         <v-list-item v-if="hasPermission('view abouts')" :to="{ name: 'admin.abouts' }" title="Abouts">
           <template #prepend>
             <InformationCircleIcon class="h-5 w-5 mx-4" />

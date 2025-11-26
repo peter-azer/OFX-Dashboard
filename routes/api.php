@@ -18,6 +18,7 @@ use App\Http\Controllers\PostsController;
 use App\Http\Controllers\EmailsController;
 use App\Http\Controllers\FormSubmitionController;
 use App\Http\Controllers\VisitorsController;
+use App\Http\Controllers\OfferController;
 use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -43,6 +44,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('whatsapp-records', [WhatsAppContactsController::class, 'showWhatsAppRecords']);
     Route::apiResource('emails', EmailsController::class);
     Route::apiResource('form-submissions', FormSubmitionController::class);
+    Route::apiResource('offers', OfferController::class);
     // Custom email routes
     Route::put('emails/{email}/toggle-status', [EmailsController::class, 'toggleStatus']);
     Route::put('emails/{email}/set-main', [EmailsController::class, 'setAsMain']);
