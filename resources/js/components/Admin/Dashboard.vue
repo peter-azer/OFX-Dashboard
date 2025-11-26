@@ -65,7 +65,7 @@
             <PhoneIcon class="h-5 w-5 mx-4" />
           </template>
         </v-list-item>
-        <v-list-item :to="{ name: 'PhoneRecords' }" title="Phone Records">
+        <v-list-item v-if="hasPermission('view phone')" :to="{ name: 'PhoneRecords' }" title="Phone Records">
           <template #prepend>
             <PhoneIcon class="h-5 w-5 mx-4" />
           </template>
@@ -76,17 +76,17 @@
             <ChatBubbleOvalLeftIcon class="h-5 w-5 mx-4" />
           </template>
         </v-list-item>
-        <v-list-item :to="{ name: 'WhatsAppRecords' }" title="WhatsApp Records">
+        <v-list-item v-if="hasPermission('view whatsapp')" :to="{ name: 'WhatsAppRecords' }" title="WhatsApp Records">
           <template #prepend>
             <ChatBubbleOvalLeftIcon class="h-5 w-5 mx-4" />
           </template>
         </v-list-item>
-        <v-list-item :to="{ name: 'admin.emails' }" title="Email Contacts">
+        <v-list-item v-if="hasPermission('view analytics')" :to="{ name: 'admin.emails' }" title="Email Contacts">
           <template #prepend>
             <EnvelopeIcon class="h-5 w-5 mx-4" />
           </template>
         </v-list-item>
-        <v-list-item :to="{ name: 'FormSubmissions' }" title="Form Submissions">
+        <v-list-item v-if="hasPermission('view analytics')" :to="{ name: 'FormSubmissions' }" title="Form Submissions">
           <template #prepend>
             <EnvelopeIcon class="h-5 w-5 mx-4" />
           </template>
