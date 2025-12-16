@@ -60,7 +60,12 @@ class ServiceController extends BaseController
     {
         try {
             if ($slug) {
-                return Service::with('work')->where('slug', $slug)->orderBy('order')->get();
+                return Service::with(['work' => function ($q) {
+                    $q->orderBy('order', 'desc');
+                }])
+                    ->where('slug', $slug)
+                    ->orderBy('order', 'desc')
+                    ->get();
             }
             return Service::with(['work' => function ($q) {
                 $q->orderBy('order', 'desc');
