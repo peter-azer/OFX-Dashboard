@@ -125,7 +125,7 @@ class PhoneContactsController extends BaseController
                     ->take($maxCallsForContact)
                     ->get()
                     ->count();
-                    dd($consecutiveCalls, $maxCallsForContact);
+                    // dd($consecutiveCalls, $maxCallsForContact);
 
                     // If we haven't reached the max calls for this contact, return the same contact
                     if ($consecutiveCalls < $maxCallsForContact) {
