@@ -116,6 +116,7 @@ class PhoneContactsController extends BaseController
             if ($lastRecord) {
                 $lastContact = PhoneContacts::find($lastRecord->phone_contacts_id);
 
+                dd($lastContact);
                 if ($lastContact && $lastContact->type == $type) {
                     $maxCallsForContact = (int)($lastContact->counter ?? 1);
 
