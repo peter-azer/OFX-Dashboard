@@ -161,7 +161,7 @@ class PhoneContactsController extends BaseController
                 return response()->json(['message' => 'No ' . $type . ' contacts found'], 404);
             }
 
-            return response()->json($nextContact);
+            return $this->formatResponse($nextContact);
         } catch (\Exception $e) {
             return response()->json(['message' => 'An error occurred while fetching the next ' . $type . ' contact', 'error' => $e->getMessage()], 500);
         }
