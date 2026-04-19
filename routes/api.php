@@ -64,7 +64,9 @@ Route::get('/blogs', [BlogsController::class, 'index']);
 Route::get('/blogs/{post}', [BlogsController::class, 'show']);
 // Posts API (public index/show; create/update/delete guarded by controller middleware)
 Route::apiResource('posts', PostsController::class);
-Route::get('/next-contact', [PhoneContactsController::class, 'nextPhoneNumber']);
+Route::get('/next-contact', [PhoneContactsController::class, 'nextSeniorPhoneNumber']);
+Route::get('/next-junior-contact', [PhoneContactsController::class, 'nextJuniorPhoneNumber']);
+Route::get('/next-senior-contact', [PhoneContactsController::class, 'nextSeniorPhoneNumber']);
 Route::post('/phone/{phone_contact}/record', [PhoneContactsController::class, 'recordPhoneNumber']);
 Route::post('submit-form', [FormSubmitionController::class, 'store']);
 Route::get('/next-whatsapp-contact', [WhatsAppContactsController::class, 'nextWhatsAppNumber']);

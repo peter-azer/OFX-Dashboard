@@ -13,7 +13,8 @@ class PhoneContacts extends Model
     protected $fillable = [
         'name',
         'phone',
-        'counter'
+        'counter',
+        'type'
     ];
 
     public function records()

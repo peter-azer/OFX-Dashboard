@@ -40,11 +40,11 @@ class PhoneContactsController extends BaseController
         if ($lastRecord) {
             // Get the last contact that was called with its counter
             $lastContact = PhoneContacts::find($lastRecord->phone_contacts_id);
-            
+
             if ($lastContact) {
                 // Get the max consecutive calls from the contact's counter
                 $maxCallsForContact = (int)($lastContact->counter ?? 1);
-                
+
                 // Get the number of consecutive calls for the last contact
                 $consecutiveCalls = PhoneRecord::where('phone_contacts_id', $lastContact->id)
                     ->orderBy('id', 'desc')
@@ -56,14 +56,14 @@ class PhoneContactsController extends BaseController
                     return $this->formatResponse($lastContact);
                 }
             }
-            
+
             // If we get here, we need to move to the next contact
             $nextContact = PhoneContacts::where('id', '>', $lastRecord->phone_contacts_id)
                 ->whereNotNull('counter')
                 ->where('counter', '>', 0)
                 ->orderBy('id')
                 ->first();
-                
+
             // If no next contact, wrap around to the first valid contact
             if (!$nextContact) {
                 $nextContact = PhoneContacts::whereNotNull('counter')
@@ -85,7 +85,83 @@ class PhoneContactsController extends BaseController
 
         return $this->formatResponse($nextContact);
     }
-    
+
+    /**
+     * Get the next junior phone number.
+     */
+    public function nextJuniorPhoneNumber()
+    {
+        return $this->getNextPhoneNumberByType('junior');
+    }
+
+    /**
+     * Get the next senior phone number.
+     */
+    public function nextSeniorPhoneNumber()
+    {
+        return $this->getNextPhoneNumberByType('senior');
+    }
+
+    /**
+     * Get the next phone number by type (junior/senior).
+     */
+    private function getNextPhoneNumberByType($type)
+    {
+        $lastRecord = PhoneRecord::latest('id')->first();
+
+        if ($lastRecord) {
+            // Get the last contact that was called with its counter
+            $lastContact = PhoneContacts::find($lastRecord->phone_contacts_id);
+
+            // Only proceed if the last contact matches the requested type
+            if ($lastContact && $lastContact->type === $type) {
+                // Get the max consecutive calls from the contact's counter
+                $maxCallsForContact = (int)($lastContact->counter ?? 1);
+
+                // Get the number of consecutive calls for the last contact
+                $consecutiveCalls = PhoneRecord::where('phone_contacts_id', $lastContact->id)
+                    ->orderBy('id', 'desc')
+                    ->take($maxCallsForContact)
+                    ->count();
+
+                // If we haven't reached the max calls for this contact, return the same contact
+                if ($consecutiveCalls < $maxCallsForContact) {
+                    return $this->formatResponse($lastContact);
+                }
+            }
+
+            // If we get here, we need to move to the next contact of the same type
+            $nextContact = PhoneContacts::where('id', '>', $lastRecord->phone_contacts_id)
+                ->where('type', $type)
+                ->whereNotNull('counter')
+                ->where('counter', '>', 0)
+                ->orderBy('id')
+                ->first();
+
+            // If no next contact, wrap around to the first valid contact of the same type
+            if (!$nextContact) {
+                $nextContact = PhoneContacts::where('type', $type)
+                    ->whereNotNull('counter')
+                    ->where('counter', '>', 0)
+                    ->orderBy('id')
+                    ->first();
+            }
+        } else {
+            // No records yet, get the first valid contact of the specified type
+            $nextContact = PhoneContacts::where('type', $type)
+                ->whereNotNull('counter')
+                ->where('counter', '>', 0)
+                ->orderBy('id')
+                ->first();
+        }
+
+        if (!$nextContact) {
+            return response()->json(['message' => 'No ' . $type . ' contacts found'], 404);
+        }
+
+        return $this->formatResponse($nextContact);
+    }
+
     /**
      * Format the response for next phone number
      */
@@ -98,7 +174,7 @@ class PhoneContactsController extends BaseController
         ]);
     }
 
-    /** 
+    /**
      * record a click on phone number
      */
 
@@ -131,6 +207,7 @@ class PhoneContactsController extends BaseController
             'name' => 'required|string',
             'phone' => 'required|string',
             'counter' => 'nullable|numeric',
+            'type' => 'nullable|in:junior,senior',
         ]);
 
         return PhoneContacts::create($validated);
@@ -161,6 +238,7 @@ class PhoneContactsController extends BaseController
             'name' => 'required|string',
             'phone' => 'required|string',
             'counter' => 'nullable|numeric',
+            'type' => 'nullable|in:junior,senior',
         ]);
 
         $phone_contact->update($validated);
