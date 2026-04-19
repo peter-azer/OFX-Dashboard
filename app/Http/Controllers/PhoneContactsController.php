@@ -105,7 +105,7 @@ class PhoneContactsController extends BaseController
     /**
      * Get the next phone number by type (junior/senior).
      */
-    private function getNextPhoneNumberByType($type)
+    private function getNextPhoneNumberByType(string $type)
     {
         try {
 
@@ -161,7 +161,7 @@ class PhoneContactsController extends BaseController
                 return response()->json(['message' => 'No ' . $type . ' contacts found'], 404);
             }
 
-            return $this->formatResponse($nextContact);
+            return response()->json($nextContact);
         } catch (\Exception $e) {
             return response()->json(['message' => 'An error occurred while fetching the next ' . $type . ' contact', 'error' => $e->getMessage()], 500);
         }
