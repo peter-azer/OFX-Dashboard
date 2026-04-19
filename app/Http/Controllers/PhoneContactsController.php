@@ -46,11 +46,10 @@ class PhoneContactsController extends BaseController
                 $maxCallsForContact = (int)($lastContact->counter ?? 1);
 
                 // Get the number of consecutive calls for the last contact
-                $recentRecords = PhoneRecord::orderBy('id', 'desc')
+                $consecutiveCalls = PhoneRecord::where('phone_contacts_id', $lastContact->id)
+                    ->orderBy('id', 'desc')
                     ->take($maxCallsForContact)
-                    ->pluck('phone_contacts_id')
-                    ->toArray();
-                $consecutiveCalls = $recentRecords === array_fill(0, count($recentRecords), $lastContact->id) ? count($recentRecords) : 0;
+                    ->count();
 
                 // If we haven't reached the max calls for this contact, return the same contact
                 if ($consecutiveCalls < $maxCallsForContact) {
@@ -124,13 +123,10 @@ class PhoneContactsController extends BaseController
                     $maxCallsForContact = (int)($lastContact->counter ?? 1);
 
                     // Get the number of consecutive calls for the last contact
-                    $recentRecords = PhoneRecord::whereHas('phoneContact', function ($query) use ($type) {
-                        $query->where('type', $type);
-                    })->orderBy('id', 'desc')
+                    $consecutiveCalls = PhoneRecord::where('phone_contacts_id', $lastContact->id)
+                        ->orderBy('id', 'desc')
                         ->take($maxCallsForContact)
-                        ->pluck('phone_contacts_id')
-                        ->toArray();
-                    $consecutiveCalls = $recentRecords === array_fill(0, count($recentRecords), $lastContact->id) ? count($recentRecords) : 0;
+                        ->count();
 
                     // If we haven't reached the max calls for this contact, return the same contact
                     if ($consecutiveCalls < $maxCallsForContact) {
