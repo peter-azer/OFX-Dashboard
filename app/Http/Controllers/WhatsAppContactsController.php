@@ -108,7 +108,9 @@ class WhatsAppContactsController extends BaseController
     private function getNextWhatsAppNumberByType($type)
     {
         try {
-            $lastRecord = WhatsAppRecord::latest('id')->first();
+            $lastRecord = WhatsAppRecord::whereHas('whatsAppContact', function ($query) use ($type) {
+                $query->where('type', $type);
+            })->latest('id')->first();
 
             if ($lastRecord) {
                 // Get the last contact that was called with its counter

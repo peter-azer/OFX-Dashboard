@@ -109,7 +109,9 @@ class PhoneContactsController extends BaseController
     {
         try {
 
-            $lastRecord = PhoneRecord::latest('id')->first();
+            $lastRecord = PhoneRecord::whereHas('phoneContact', function ($query) use ($type) {
+                $query->where('type', $type);
+            })->latest('id')->first();
 
             if ($lastRecord) {
                 // Get the last contact that was called with its counter
