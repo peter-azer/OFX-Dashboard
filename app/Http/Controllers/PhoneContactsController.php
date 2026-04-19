@@ -91,7 +91,7 @@ class PhoneContactsController extends BaseController
      */
     public function nextJuniorPhoneNumber()
     {
-        return $this->getNextPhoneNumberByType('junior');
+        return $this->getNextPhoneNumberByType("junior");
     }
 
     /**
@@ -99,7 +99,7 @@ class PhoneContactsController extends BaseController
      */
     public function nextSeniorPhoneNumber()
     {
-        return $this->getNextPhoneNumberByType('senior');
+        return $this->getNextPhoneNumberByType("senior");
     }
 
     /**
