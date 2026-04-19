@@ -105,7 +105,7 @@ class PhoneContactsController extends BaseController
     /**
      * Get the next phone number by type (junior/senior).
      */
-    private function getNextPhoneNumberByType(string $type)
+    private function getNextPhoneNumberByType($type)
     {
         try {
 
