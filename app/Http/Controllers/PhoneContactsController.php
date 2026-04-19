@@ -116,7 +116,7 @@ class PhoneContactsController extends BaseController
             if ($lastRecord) {
                 $lastContact = PhoneContacts::find($lastRecord->phone_contacts_id);
 
-                if ($lastContact && $lastContact->type === $type) {
+                if ($lastContact && $lastContact->type == $type) {
                     $maxCallsForContact = (int)($lastContact->counter ?? 1);
 
                     // Get the number of consecutive calls for the last contact
