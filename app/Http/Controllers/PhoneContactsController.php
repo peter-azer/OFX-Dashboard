@@ -123,6 +123,7 @@ class PhoneContactsController extends BaseController
                     $consecutiveCalls = PhoneRecord::where('phone_contacts_id', $lastContact->id)
                     ->orderBy('id', 'desc')
                     ->take($maxCallsForContact)
+                    ->get()
                     ->count();
                     dd($consecutiveCalls, $maxCallsForContact);
 
