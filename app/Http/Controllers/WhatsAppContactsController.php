@@ -117,15 +117,19 @@ class WhatsAppContactsController extends BaseController
                 $lastContact = WhatsAppContacts::find($lastRecord->whats_app_contacts_id);
 
                 // Only proceed if the last contact matches the requested type
-                if ($lastContact && $lastContact->type === $type) {
+                if ($lastContact && $lastContact->type == $type) {
                     // Get the max consecutive calls from the contact's counter
                     $maxCallsForContact = (int)($lastContact->counter ?? 1);
 
                     // Get the number of consecutive calls for the last contact
-                    $consecutiveCalls = WhatsAppRecord::where('whats_app_contacts_id', $lastContact->id)
-                        ->orderBy('id', 'desc')
+                    $recentRecords = WhatsAppRecord::whereHas('whatsAppContact', function ($query) use ($type) {
+                        $query->where('type', $type);
+                    })->orderBy('id', 'desc')
                         ->take($maxCallsForContact)
-                        ->count();
+                        ->pluck('whats_app_contacts_id')
+                        ->toArray();
+                    $allSameContact = $recentRecords === array_fill(0, count($recentRecords), (string)$lastContact->id);
+                    $consecutiveCalls = $allSameContact ? count($recentRecords) : 0;
 
                     // If we haven't reached the max calls for this contact, return the same contact
                     if ($consecutiveCalls < $maxCallsForContact) {

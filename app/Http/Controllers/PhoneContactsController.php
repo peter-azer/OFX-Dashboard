@@ -128,7 +128,6 @@ class PhoneContactsController extends BaseController
                     ->toArray();
                     $allSameContact = $recentRecords === array_fill(0, count($recentRecords), (string)$lastContact->id);
                     $consecutiveCalls = $allSameContact ? count($recentRecords) : 0;
-                    // dd($consecutiveCalls, $maxCallsForContact, $recentRecords);
 
                     // If we haven't reached the max calls for this contact, return the same contact
                     if ($consecutiveCalls < $maxCallsForContact) {
