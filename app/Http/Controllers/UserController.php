@@ -53,9 +53,9 @@ class UserController extends BaseController
         ]);
 
         $validated['password'] = bcrypt($validated['password']);
-        
+
         $user = User::create($validated);
-        
+
         if (isset($validated['roles'])) {
             $user->roles()->sync($validated['roles']);
         }
@@ -102,7 +102,7 @@ class UserController extends BaseController
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
             'email' => 'sometimes|string|email|max:255|unique:users,email,' . $user->id,
-            'password' => 'sometimes|string|min:8|confirmed|nullable',
+            'password' => 'sometimes|string|min:8|nullable',
             'roles' => 'sometimes|array',
             'roles.*' => 'exists:roles,id'
         ]);
@@ -114,7 +114,7 @@ class UserController extends BaseController
         }
 
         $user->update($validated);
-        
+
         if (isset($validated['roles'])) {
             $user->roles()->sync($validated['roles']);
         }
@@ -139,9 +139,9 @@ class UserController extends BaseController
                 'message' => 'You cannot delete your own account'
             ], 403);
         }
-        
+
         $user->delete();
-        
+
         return response()->json([
             'message' => 'User deleted successfully'
         ]);
