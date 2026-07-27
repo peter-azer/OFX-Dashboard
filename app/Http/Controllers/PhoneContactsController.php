@@ -8,7 +8,8 @@ use App\Http\Requests\UpdatePhoneContactsRequest;
 use App\Models\PhoneRecord;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
-
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 class PhoneContactsController extends BaseController
 {
     /**
@@ -108,63 +109,82 @@ class PhoneContactsController extends BaseController
     private function getNextPhoneNumberByType($type)
     {
         try {
-            // Get the last record of this type
-            $lastRecord = PhoneRecord::whereHas('phoneContact', function ($query) use ($type) {
-                $query->where('type', $type);
-            })->latest('id')->first();
+            return DB::transaction(function () use ($type) {
+                // Lock the last record of this type so concurrent requests can't read a stale state
+                $lastRecord = PhoneRecord::with('phoneContact')
+                    ->whereHas('phoneContact', function ($query) use ($type) {
+                        $query->where('type', $type);
+                    })
+                    ->latest('id')
+                    ->lockForUpdate()
+                    ->first();
 
-            if ($lastRecord) {
-                $lastContact = PhoneContacts::find($lastRecord->phone_contacts_id);
+                $lastContact = $lastRecord?->phoneContact;
 
                 if ($lastContact && $lastContact->type == $type) {
-                    $maxCallsForContact = (int)($lastContact->counter ?? 1);
+                    $maxCallsForContact = max(1, (int) ($lastContact->counter ?? 1));
 
-                    // Get the number of consecutive calls for the last contact
+                    // Get the IDs of the most recent records for this type
                     $recentRecords = PhoneRecord::whereHas('phoneContact', function ($query) use ($type) {
                         $query->where('type', $type);
-                    })->orderBy('id', 'desc')
-                    ->take($maxCallsForContact)
-                    ->pluck('phone_contacts_id')
-                    ->toArray();
-                    $allSameContact = $recentRecords === array_fill(0, count($recentRecords), (string)$lastContact->id);
+                    })
+                        ->orderBy('id', 'desc')
+                        ->take($maxCallsForContact)
+                        ->pluck('phone_contacts_id')
+                        ->toArray();
+
+                    $allSameContact = count($recentRecords) > 0
+                        && count(array_unique($recentRecords)) === 1
+                        && (int) $recentRecords[0] === (int) $lastContact->id;
+
                     $consecutiveCalls = $allSameContact ? count($recentRecords) : 0;
 
-                    // If we haven't reached the max calls for this contact, return the same contact
+                    // Still under the cap for this contact — keep returning it
                     if ($consecutiveCalls < $maxCallsForContact) {
                         return $this->formatResponse($lastContact);
                     }
                 }
 
-                // Move to next contact of the same type
-                $nextContact = PhoneContacts::where('id', '>', $lastRecord->phone_contacts_id)
-                    ->where('type', $type)
-                    ->whereNotNull('counter')
-                    ->where('counter', '>', 0)
-                    ->orderBy('id')
-                    ->first();
+                // Move to the next eligible contact of the same type
+                $nextContact = null;
 
+                if ($lastRecord) {
+                    $nextContact = PhoneContacts::where('id', '>', $lastRecord->phone_contacts_id)
+                        ->where('type', $type)
+                        ->whereNotNull('counter')
+                        ->where('counter', '>', 0)
+                        ->orderBy('id')
+                        ->lockForUpdate()
+                        ->first();
+                }
+
+                // Wrap around to the first eligible contact if none found after the last one
                 if (!$nextContact) {
                     $nextContact = PhoneContacts::where('type', $type)
                         ->whereNotNull('counter')
                         ->where('counter', '>', 0)
                         ->orderBy('id')
+                        ->lockForUpdate()
                         ->first();
                 }
-            } else {
-                $nextContact = PhoneContacts::where('type', $type)
-                    ->whereNotNull('counter')
-                    ->where('counter', '>', 0)
-                    ->orderBy('id')
-                    ->first();
-            }
 
-            if (!$nextContact) {
-                return response()->json(['message' => 'No ' . $type . ' contacts found'], 404);
-            }
+                if (!$nextContact) {
+                    throw new \RuntimeException("No {$type} contacts found", 404);
+                }
 
-            return $this->formatResponse($nextContact);
+                return $this->formatResponse($nextContact);
+            });
+        } catch (\RuntimeException $e) {
+            return response()->json(['message' => $e->getMessage()], $e->getCode() ?: 404);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'An error occurred while fetching the next ' . $type . ' contact', 'error' => $e->getMessage()], 500);
+            Log::error('getNextPhoneNumberByType failed', [
+                'type' => $type,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'message' => 'An error occurred while fetching the next ' . $type . ' contact',
+            ], 500);
         }
     }
 
