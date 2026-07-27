@@ -8,12 +8,13 @@ use App\Http\Requests\StoreWhatsAppContactsRequest;
 use App\Http\Requests\UpdateWhatsAppContactsRequest;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
-
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 class WhatsAppContactsController extends BaseController
 {
     /**
      * Create a new controller instance.
-    */
+     */
     public function __construct()
     {
         $this->middleware('auth:sanctum')->except(['index', 'show', 'nextWhatsAppNumber', 'nextJuniorWhatsAppNumber', 'nextSeniorWhatsAppNumber', 'recordWhatsAppNumber']);
@@ -108,67 +109,82 @@ class WhatsAppContactsController extends BaseController
     private function getNextWhatsAppNumberByType($type)
     {
         try {
-            $lastRecord = WhatsAppRecord::whereHas('whatsAppContact', function ($query) use ($type) {
-                $query->where('type', $type);
-            })->latest('id')->first();
+            return DB::transaction(function () use ($type) {
+                // Lock the last record of this type so concurrent requests can't read a stale state
+                $lastRecord = WhatsAppRecord::with('whatsAppContact')
+                    ->whereHas('whatsAppContact', function ($query) use ($type) {
+                        $query->where('type', $type);
+                    })
+                    ->latest('id')
+                    ->lockForUpdate()
+                    ->first();
 
-            if ($lastRecord) {
-                // Get the last contact that was called with its counter
-                $lastContact = WhatsAppContacts::find($lastRecord->whats_app_contacts_id);
+                $lastContact = $lastRecord?->whatsAppContact;
 
-                // Only proceed if the last contact matches the requested type
                 if ($lastContact && $lastContact->type == $type) {
-                    // Get the max consecutive calls from the contact's counter
-                    $maxCallsForContact = (int)($lastContact->counter ?? 1);
+                    $maxCallsForContact = max(1, (int) ($lastContact->counter ?? 1));
 
-                    // Get the number of consecutive calls for the last contact
+                    // Get the IDs of the most recent records for this type
                     $recentRecords = WhatsAppRecord::whereHas('whatsAppContact', function ($query) use ($type) {
                         $query->where('type', $type);
-                    })->orderBy('id', 'desc')
+                    })
+                        ->orderBy('id', 'desc')
                         ->take($maxCallsForContact)
                         ->pluck('whats_app_contacts_id')
                         ->toArray();
-                    $allSameContact = $recentRecords === array_fill(0, count($recentRecords), (string)$lastContact->id);
+
+                    $allSameContact = count($recentRecords) > 0
+                        && count(array_unique($recentRecords)) === 1
+                        && (int) $recentRecords[0] === (int) $lastContact->id;
+
                     $consecutiveCalls = $allSameContact ? count($recentRecords) : 0;
 
-                    // If we haven't reached the max calls for this contact, return the same contact
+                    // Still under the cap for this contact — keep returning it
                     if ($consecutiveCalls < $maxCallsForContact) {
                         return $this->formatWhatsAppResponse($lastContact);
                     }
                 }
 
-                // If we get here, we need to move to the next contact of the same type
-                $nextContact = WhatsAppContacts::where('id', '>', $lastRecord->whats_app_contacts_id)
-                    ->where('type', $type)
-                    ->whereNotNull('counter')
-                    ->where('counter', '>', 0)
-                    ->orderBy('id')
-                    ->first();
+                // Move to the next eligible contact of the same type
+                $nextContact = null;
 
-                // If no next contact, wrap around to the first valid contact of the same type
+                if ($lastRecord) {
+                    $nextContact = WhatsAppContacts::where('id', '>', $lastRecord->whats_app_contacts_id)
+                        ->where('type', $type)
+                        ->whereNotNull('counter')
+                        ->where('counter', '>', 0)
+                        ->orderBy('id')
+                        ->lockForUpdate()
+                        ->first();
+                }
+
+                // Wrap around to the first eligible contact if none found after the last one
                 if (!$nextContact) {
                     $nextContact = WhatsAppContacts::where('type', $type)
                         ->whereNotNull('counter')
                         ->where('counter', '>', 0)
                         ->orderBy('id')
+                        ->lockForUpdate()
                         ->first();
                 }
-            } else {
-                // No records yet, get the first valid contact of the specified type
-                $nextContact = WhatsAppContacts::where('type', $type)
-                    ->whereNotNull('counter')
-                    ->where('counter', '>', 0)
-                    ->orderBy('id')
-                    ->first();
-            }
 
-            if (!$nextContact) {
-                return response()->json(['message' => 'No ' . $type . ' contacts found'], 404);
-            }
+                if (!$nextContact) {
+                    throw new \RuntimeException("No {$type} contacts found", 404);
+                }
 
-            return $this->formatWhatsAppResponse($nextContact);
+                return $this->formatWhatsAppResponse($nextContact);
+            });
+        } catch (\RuntimeException $e) {
+            return response()->json(['message' => $e->getMessage()], $e->getCode() ?: 404);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'An error occurred while fetching the next ' . $type . ' contact', 'error' => $e->getMessage()], 500);
+            Log::error('getNextWhatsAppNumberByType failed', [
+                'type' => $type,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'message' => 'An error occurred while fetching the next ' . $type . ' contact',
+            ], 500);
         }
     }
 
@@ -188,7 +204,8 @@ class WhatsAppContactsController extends BaseController
      * record a click on phone number
      */
 
-     public function recordWhatsAppNumber(Request $request, WhatsAppContacts $whatsapp_contact){
+    public function recordWhatsAppNumber(Request $request, WhatsAppContacts $whatsapp_contact)
+    {
         $whatsapp_contact->records()->create([
             'whats_app_contacts_id' => $whatsapp_contact->id,
         ]);
@@ -196,7 +213,7 @@ class WhatsAppContactsController extends BaseController
         return response()->json([
             'message' => 'Phone number clicked',
         ]);
-     }
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -270,7 +287,7 @@ class WhatsAppContactsController extends BaseController
     public function showWhatsAppRecords()
     {
         return WhatsAppRecord::with('whatsAppContact')
-        ->orderBy('created_at', 'desc')
-        ->get();
+            ->orderBy('created_at', 'desc')
+            ->get();
     }
 }
