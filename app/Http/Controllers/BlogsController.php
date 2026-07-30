@@ -12,8 +12,9 @@ class BlogsController extends Controller
      */
     public function index()
     {
-        $blogs = Posts::paginate(10);
-        return $blogs;
+$blogs = Posts::latest()->paginate(10);
+
+return $blogs;
     }
 
     /**
