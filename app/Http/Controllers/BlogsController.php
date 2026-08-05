@@ -38,7 +38,7 @@ return $blogs;
      */
     public function show(Posts $post)
     {
-        return $post;
+        return Posts::where('slug',$post->slug)->first();
     }
 
     /**
