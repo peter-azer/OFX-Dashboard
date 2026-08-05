@@ -36,9 +36,10 @@ return $blogs;
     /**
      * Display the specified resource.
      */
-    public function show(Posts $post)
+    public function show($post)
     {
-        return Posts::where('slug',$post->slug)->first();
+
+        return Posts::where('slug',$post)->first();
     }
 
     /**
